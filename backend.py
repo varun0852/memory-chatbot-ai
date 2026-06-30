@@ -1,50 +1,110 @@
-import os
-from langchain_google_genai import ChatGoogleGenerativeAI
-# from langchain.memory import ConversationBufferMemory
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
-from langchain_core.prompts import MessagesPlaceholder
-from langchain.chains import LLMChain
-from langchain_core.chat_history import InMemoryChatMessageHistory
+import logging
+
+import google.generativeai as genai
+
+from config import GOOGLE_API_KEY, MODEL_NAME
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
+
+logger = logging.getLogger(__name__)
 
 
 
-def initialize_gemini_chain(api_key):
-    # api_key = "AIzaSyBLQN5NO0DFWiQHAXsAtOueDm308_nD2LE"
+class ChatBot:
 
-    if not api_key:
-        return None
+    """
+        ChatBot manages all communication with the Google Gemini model.
+
+        Responsibilities:
+        - Configure Gemini
+        - Convert Streamlit chat history
+        - Generate AI responses
+    """
+
+
+    def __init__(self, api_key: str | None = None):
+
+        """
+        Initialize the chatbot.
+
+        If an API key is passed from the frontend,
+        use it. Otherwise, use the key from config.py.
+        """
+
+        self.api_key = api_key or GOOGLE_API_KEY
+
+        if not self.api_key:
+            raise ValueError(
+                "Google API Key not found. "
+                "Add it to .env or enter it in the sidebar."
+            )
+
+        self.model = self._configure_model()
+
+        logger.info("ChatBot initialized successfully.")
+
+
+    def _configure_model(self):
+        """
+        Configure the Gemini model and return it.
+        """
+
+        genai.configure(api_key=self.api_key)
+
+        logger.info("Configuring Gemini model...")
+
+        model = genai.GenerativeModel(MODEL_NAME)
+
+        logger.info(f"Loaded model: {MODEL_NAME}")
+
+        return model
     
-    llm = ChatGoogleGenerativeAI(
-        model ="gemini-3-flash-preview",
-        google_api_key = "api_key",
-        temperature = 0.7
-    )
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system" , "You are a friendly and helpful AI assistant. That Answer Questions clearly."),
-        MessagesPlaceholder(variable_name = "chat_history"),
-        ("human" , "{question}")
-    ])
-    memory = ConversationBufferMemory(
-        memory_key = "chat_history",
-        return_messages = True
-    )
+    def _prepare_history(
+        self,
+        history: list[dict]
+    ) -> list[dict]:
+        """
+        Convert Streamlit chat history into the format
+        expected by the Gemini API.
+        """
 
+        conversation = []
 
-    conversation_chain = LLMChain(
-        llm = llm,
-        prompt = prompt,
-        memory = memory,
-        verbose = False
-    )
+        for message in history:
+            role = "user" if message["role"] == "user" else "model"
 
-    return conversation_chain
+            conversation.append(
+                {
+                    "role": role,
+                    "parts": [message["content"]],
+                }
+            )
 
-def get_chatbot_response(chain , user_input):
+        return conversation
+    
 
-    response = chain.invoke({"question" : user_input})
-    return response["text"]
+    def chat(
+        self,
+        user_message: str,
+        history: list[dict]
+    ) -> str:
+        """
+        Generate a response from Gemini using the
+        previous conversation history.
+        """
 
+        conversation = self._prepare_history(history)
 
-   
+        chat = self.model.start_chat(history=conversation)
+
+        logger.info("Sending request to Gemini...")
+
+        response = chat.send_message(user_message)
+
+        logger.info("Response received successfully.")
+
+        return response.text
