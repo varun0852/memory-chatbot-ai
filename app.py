@@ -2,28 +2,30 @@ import streamlit as st
 
 from backend import ChatBot
 
-import logging
-
-logger = logging.getLogger(__name__)
+from config import APP_TITLE, AUTHOR
 
 
-st.set_page_config(page_title = "Memory ChatBot")
+st.set_page_config(
+    page_title=APP_TITLE,
+    page_icon="🧠",
+    layout="centered",
+)
 
-st.title("🧠 Memory ChatBot")
+st.title(f"🧠 {APP_TITLE}")
 
-st.caption("Powered by Google Gemini")
+st.caption("Powered by AI")
 
 with st.expander("ℹ️ About This Project"):
-    st.markdown("""
+    st.markdown(f"""
 ### 🧠 Memory ChatBot
 
-A conversational AI chatbot built using **Google Gemini** and **Streamlit**.
+A conversational AI chatbot built using **Groq**, **Llama 3.3 70B**, and **Streamlit**.
 
 ### 🚀 Features
 
 - 💬 Multi-turn conversations
 - 🧠 Conversation memory
-- 🤖 Google Gemini integration
+- 🤖 Groq LLM integration
 - 🏗️ Object-Oriented architecture
 - 🔒 Secure API key management
 - 🧪 Backend testing
@@ -32,21 +34,21 @@ A conversational AI chatbot built using **Google Gemini** and **Streamlit**.
 
 - Python
 - Streamlit
-- Google Gemini API
+- Groq API
 
-**Version:** 1.0
+**Version:** 1.1
 
 ---
-👨‍💻 Built by **Varun**
+👨‍💻 Built by **{AUTHOR}**
 """)
 
 with st.sidebar:
     st.header("⚙️ Settings")
-    api_key = st.text_input("Google Gemini API Key",type="password",help="Leave empty to use the key stored in your .env file.")
+    api_key = st.text_input("Groq API Key",type="password",help="Leave empty to use the Groq API key stored in your .env file.")
 
     if not api_key:
         st.info("Using API key from .env if available.")
-    st.markdown("[Get your API key here](https://aistudio.google.com/app/apikey)")
+    st.markdown("[Get your Groq API key](https://console.groq.com/keys)")
 
     if st.button("🗑️ Clear Chat"):
         st.session_state.messages = []
@@ -58,8 +60,8 @@ with st.sidebar:
 
     st.sidebar.divider()
 
-    st.sidebar.markdown("""
-    ### 👨‍💻 Created by Varun
+    st.sidebar.markdown(f"""
+    ### 👨‍💻 Created by {AUTHOR}
 
     AI Engineer • Generative AI
     """)
@@ -75,17 +77,18 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # Welcome screen
+
 if not st.session_state.messages:
     st.info("""
 👋 Welcome to Memory ChatBot
 
-Built to demonstrate conversational AI with memory using Google's Gemini API.
+Built to demonstrate conversational AI with memory using Groq's Llama 3.3 model.
 
 ✨ Features:
 • Multi-turn conversation
 • Conversation memory
 • Clean OOP architecture
-• Google Gemini integration
+• Groq LLM integration
 
 How can I help you today?"""
 )
@@ -107,27 +110,30 @@ if prompt := st.chat_input("What would you like to talk about?"):
         with st.chat_message("assistant"):
             with st.spinner("🤖 Thinking..."):
                 try:
+                    response_text = st.session_state.chatbot.chat(
+                        prompt,
+                        st.session_state.messages
+                    )
 
-                    response_text = st.session_state.chatbot.chat(prompt, st.session_state.messages)
                     st.markdown(response_text)
 
-
-                    st.session_state.messages.append({"role": "assistant" , "content" : response_text})
-                except Exception as e:
-                    logger.exception("Unexpected error while generating response.")
-
-                    st.error(
-                        "Something went wrong while generating the response."
+                    st.session_state.messages.append(
+                        {
+                            "role": "assistant",
+                            "content": response_text
+                        }
                     )
-    else:
-        st.error("Please enter a valid API Key to initialize the chatbot.")
+
+                except Exception as e:
+                    st.error(f"⚠️ Unexpected error: {e}")
+                
 
 
 st.divider()
 
-st.markdown("""
+st.markdown(f"""
 <div style="text-align:center; color:gray; font-size:14px;">
-👨‍💻 <b>Created by Varun</b><br>
+👨‍💻 <b>{AUTHOR}</b><br>
 AI Engineer • Generative AI
 </div>
 """, unsafe_allow_html=True)
