@@ -12,6 +12,8 @@ from utils.exporter import export_as_text, export_as_markdown
 
 from utils.pdf_exporter import export_as_pdf
 
+from utils.validator import validate_prompt
+
 from backend.exceptions import InvalidAPIKeyError, APIConnectionError, APITimeoutError, RateLimitError, ResponseError
 
 
@@ -52,7 +54,7 @@ A conversational AI chatbot built using **Groq**, **Llama 3.3 70B**, and **Strea
 
 - 💬 Multi-turn conversations
 - 🧠 Conversation memory
-- 🤖 Groq LLM integration
+- 🤖 LLM integration
 - 🏗️ Object-Oriented architecture
 - 🔒 Secure API key management
 - 🧪 Backend testing
@@ -61,7 +63,7 @@ A conversational AI chatbot built using **Groq**, **Llama 3.3 70B**, and **Strea
 
 - Python
 - Streamlit
-- Groq API
+- LLM API
 
 f**Version:** v{APP_VERSION}
 
@@ -193,6 +195,13 @@ for message in st.session_state.messages:
 
 if prompt := st.chat_input("What would you like to talk about?"):
 
+    try:
+        validate_prompt(prompt)
+
+    except ValueError as e:
+        st.warning(str(e))
+        st.stop()
+
     with st.chat_message("user"):
         st.markdown(prompt)
     st.session_state.messages.append({"role" : "user",
@@ -220,7 +229,7 @@ if prompt := st.chat_input("What would you like to talk about?"):
                             "timestamp": datetime.now().strftime("%H:%M:%S"),
                         }
                     )
-                    # Force Streamlit to rerun after the assistant message is added.
+                    # Refresh the UI so the latest conversation state is displayed.
                     st.rerun()
 
                 except InvalidAPIKeyError as e:
@@ -233,7 +242,7 @@ if prompt := st.chat_input("What would you like to talk about?"):
                     st.error(f"⏳ {e}")
 
                 except RateLimitError as e:
-                    st.error(f"🚦{e}")
+                    st.error(f"🚦 {e}")
 
                 except ResponseError as e:
                     st.error(f"🤖 {e}")

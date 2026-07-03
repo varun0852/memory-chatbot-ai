@@ -42,3 +42,19 @@ APP_VERSION = "2.0"
 
 # Branding
 AUTHOR = "Varun"
+
+
+# Retry Configuration
+
+# Maximum number of retry attempts for temporarily API failures.
+MAX_RETRIES = 3
+
+# Delay in (seconds) between retry attempts.
+RETRY_DELAY = 2
+
+# Request Configuration
+REQUEST_TIMEOUT = 30
+
+# Validation
+MAX_PROMPT_LENGTH = 5000
+

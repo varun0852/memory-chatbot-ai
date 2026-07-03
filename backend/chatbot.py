@@ -6,7 +6,9 @@ from groq import (
     RateLimitError as GroqRateLimitError,
     APIResponseValidationError,)
 
-from config import GROQ_API_KEY, MODEL_NAME, TEMPERATURE, SYSTEM_PROMPT
+from config import GROQ_API_KEY, MODEL_NAME, TEMPERATURE, SYSTEM_PROMPT, MAX_RETRIES, RETRY_DELAY, REQUEST_TIMEOUT
+
+import time
 
 from utils.logger import logger
 
@@ -17,10 +19,10 @@ from backend.exceptions import InvalidAPIKeyError, APIConnectionError, APITimeou
 class ChatBot:
 
     """
-        ChatBot manages all communication with the Groq API.
+        ChatBot manages all communication with the LLM provider.
 
         Responsibilities:
-        - Configure Groq client
+        - Configure LLM client
         - Build conversation messages
         - Send chat requests
         - Return AI responses
@@ -46,19 +48,22 @@ class ChatBot:
                 "Add it to .env or enter it in the sidebar"
             )
 
-        self.client = self._configure_model()
+        self.client = self._configure_client()
 
         logger.info("ChatBot initialized successfully.")
 
 
-    def _configure_model(self) -> Groq:
+    def _configure_client(self):
         """
-        Configure the Groq client and return it.
+        Configure the LLM client and return it.
         """
 
-        logger.info("Configuring Groq client...")
+        logger.info("Configuring LLM client...")
 
-        client = Groq(api_key=self.api_key)
+        client = Groq(
+            api_key=self.api_key,
+            timeout=REQUEST_TIMEOUT
+        )
 
         logger.info(f"Loaded model: {MODEL_NAME}")
 
@@ -70,7 +75,7 @@ class ChatBot:
     ) -> list[dict]:
         """
         Build the conversation history in the format
-        expected by the Groq API.
+        expected by the LLM.
         """
 
         messages = [
@@ -97,72 +102,111 @@ class ChatBot:
     history: list[dict]
     ) -> str:
         """
-        Generate a response from Groq using
+        Generate a response from LLM using
         the previous conversation history.
         """
 
         messages = self._build_messages(history)
 
 
-        logger.info("Sending request to Groq...")
+        logger.info("Sending request to LLM...")
 
-        try:
+        for attempt in range(1, MAX_RETRIES +1):
 
-            response = self.client.chat.completions.create(
-                model=MODEL_NAME,
-                messages=messages,
-                temperature=TEMPERATURE,
-            )
+            try:
 
-            logger.info("Response received successfully.")
+                logger.info(
+                    f"Sending request to LLM (Attempt {attempt}/{MAX_RETRIES})..."
+                )
 
-            return response.choices[0].message.content
-        
-        except AuthenticationError as e:
+                response = self.client.chat.completions.create(
+                    model=MODEL_NAME,
+                    messages=messages,
+                    temperature=TEMPERATURE,
+                )
 
-            logger.exception("Authentication failed.")
+                logger.info("Response received successfully.")
 
-            raise InvalidAPIKeyError(
-                "Invalid API Key."
-            ) from e
-        
-        except GroqAPIConnectionError as e:
+                return response.choices[0].message.content
+            
+            except GroqAPIConnectionError as e:
 
-            logger.exception("Failed to connect to Groq.")
+                logger.warning(
+                    f"Connection attempt {attempt}/{MAX_RETRIES} failed: {e}"
+                )
 
-            raise APIConnectionError(
-                "Unable to connect to the API."
-            ) from e
-        
-        except GroqAPITimeoutError as e:
+                if attempt == MAX_RETRIES:
 
-            logger.exception("API request timed out.")
+                    logger.exception(
+                        "Failed to connect to AI service. after all retry attempts."
+                    )
 
-            raise APITimeoutError(
-                "The request timed out."
-            ) from e
-        
-        except GroqRateLimitError as e:
+                    raise APIConnectionError(
+                        "Unable to connect to the AI service. Please check your internet connection and try again."
+                    ) from e
 
-            logger.exception("API rate limit exceeded")
+                logger.info(
+                    f"Retrying in {RETRY_DELAY} seconds..."
+                )
 
-            raise RateLimitError(
-                "Rate limit exceed. please again shortly."
-            ) from e
-        
-        except APIResponseValidationError as e:
+                time.sleep(RETRY_DELAY)
 
-            logger.exception("Invalid response from API.")
+            except GroqAPITimeoutError as e:
 
-            raise ResponseError(
-                "The AI returned an invalid response."
-            ) from e
-        
-        except Exception as e:
+                logger.warning(
+                    f"Timeout on attempt {attempt}/{MAX_RETRIES}: {e}"
+                )
 
-            logger.exception("Unexcepted chatbot error.")
+                if attempt == MAX_RETRIES:
 
-            raise ResponseError(
-                "An unexcepted error occured while generationg a response."
-            ) from e
-        
+                    logger.exception(
+                        "LLM request timed out after all retry attempts."
+                    )
+
+                    raise APITimeoutError(
+                        "The request timed out. Please try again."
+                    ) from e
+
+                logger.info(
+                    f"Retrying in {RETRY_DELAY} seconds..."
+                )
+
+                time.sleep(RETRY_DELAY)
+
+            
+            except AuthenticationError as e:
+
+                logger.exception("Authentication failed.")
+
+                raise InvalidAPIKeyError(
+                    "The provided API key is invalid."
+                ) from e
+            
+            
+            
+            except GroqRateLimitError as e:
+
+                logger.exception("API rate limit exceeded")
+
+                raise RateLimitError(
+                    "Rate limit exceed. Please try again in a few moments."
+                ) from e
+            
+            
+            except APIResponseValidationError as e:
+
+                logger.exception("Invalid response from LLM.")
+
+                raise ResponseError(
+                    "The AI returned an invalid response."
+                ) from e
+            
+            
+            except Exception as e:
+
+                logger.exception("Unexpected chatbot error.")
+
+                raise ResponseError(
+                    "An unexpected error occurred while generating a response."
+                ) from e
+            

@@ -75,10 +75,10 @@ Overall Progress: **40%**
 # 🛡 Phase 3 — Reliability
 
 - [x] Better exception handling
-- [ ] Retry API failures
+- [x] Retry API failures
 - [ ] Timeout handling
-- [ ] Input validation
-- [ ] Better status messages
+- [x] Input validation
+- [ ] Better status messages(moved to phase 5 as Multi-stage status updates using st.status())
 
 ---
 
@@ -99,6 +99,7 @@ Overall Progress: **40%**
 - [ ] Extract PDF text
 - [ ] Chat with PDF
 - [ ] PDF + Memory
+- [ ] Multi-stage status updates using st.status()
 
 ---
 
