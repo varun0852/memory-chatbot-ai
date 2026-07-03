@@ -1,8 +1,16 @@
-from groq import Groq
+from groq import (
+    Groq, 
+    AuthenticationError,
+    APIConnectionError as GroqAPIConnectionError,
+    APITimeoutError as GroqAPITimeoutError,
+    RateLimitError as GroqRateLimitError,
+    APIResponseValidationError,)
 
 from config import GROQ_API_KEY, MODEL_NAME, TEMPERATURE, SYSTEM_PROMPT
 
 from utils.logger import logger
+
+from backend.exceptions import InvalidAPIKeyError, APIConnectionError, APITimeoutError, RateLimitError, ResponseError
 
 
 
@@ -31,10 +39,12 @@ class ChatBot:
         self.api_key = api_key or GROQ_API_KEY
 
         if not self.api_key:
-            raise ValueError(
-            "Groq API Key not found. "
-            "Add it to .env or enter it in the sidebar."
-        )
+            logger.error("No API key is provided.")
+
+            raise InvalidAPIKeyError(
+                "API key not found. " 
+                "Add it to .env or enter it in the sidebar"
+            )
 
         self.client = self._configure_model()
 
@@ -96,12 +106,63 @@ class ChatBot:
 
         logger.info("Sending request to Groq...")
 
-        response = self.client.chat.completions.create(
-            model=MODEL_NAME,
-            messages=messages,
-            temperature=TEMPERATURE,
-        )
+        try:
 
-        logger.info("Response received successfully.")
+            response = self.client.chat.completions.create(
+                model=MODEL_NAME,
+                messages=messages,
+                temperature=TEMPERATURE,
+            )
 
-        return response.choices[0].message.content
+            logger.info("Response received successfully.")
+
+            return response.choices[0].message.content
+        
+        except AuthenticationError as e:
+
+            logger.exception("Authentication failed.")
+
+            raise InvalidAPIKeyError(
+                "Invalid API Key."
+            ) from e
+        
+        except GroqAPIConnectionError as e:
+
+            logger.exception("Failed to connect to Groq.")
+
+            raise APIConnectionError(
+                "Unable to connect to the API."
+            ) from e
+        
+        except GroqAPITimeoutError as e:
+
+            logger.exception("API request timed out.")
+
+            raise APITimeoutError(
+                "The request timed out."
+            ) from e
+        
+        except GroqRateLimitError as e:
+
+            logger.exception("API rate limit exceeded")
+
+            raise RateLimitError(
+                "Rate limit exceed. please again shortly."
+            ) from e
+        
+        except APIResponseValidationError as e:
+
+            logger.exception("Invalid response from API.")
+
+            raise ResponseError(
+                "The AI returned an invalid response."
+            ) from e
+        
+        except Exception as e:
+
+            logger.exception("Unexcepted chatbot error.")
+
+            raise ResponseError(
+                "An unexcepted error occured while generationg a response."
+            ) from e
+        

@@ -12,6 +12,8 @@ from utils.exporter import export_as_text, export_as_markdown
 
 from utils.pdf_exporter import export_as_pdf
 
+from backend.exceptions import InvalidAPIKeyError, APIConnectionError, APITimeoutError, RateLimitError, ResponseError
+
 
 st.set_page_config(
     page_title=APP_TITLE,
@@ -162,7 +164,7 @@ with st.sidebar:
 if "chatbot" not in st.session_state:
     try:
         st.session_state.chatbot = ChatBot(api_key)
-    except ValueError as e:
+    except InvalidAPIKeyError as e:
         st.error(str(e))
 
 
@@ -221,8 +223,23 @@ if prompt := st.chat_input("What would you like to talk about?"):
                     # Force Streamlit to rerun after the assistant message is added.
                     st.rerun()
 
+                except InvalidAPIKeyError as e:
+                    st.error(f"🔑 {e}")
+
+                except APIConnectionError as e:
+                    st.error(f"🌐 {e}")
+
+                except APITimeoutError as e:
+                    st.error(f"⏳ {e}")
+
+                except RateLimitError as e:
+                    st.error(f"🚦{e}")
+
+                except ResponseError as e:
+                    st.error(f"🤖 {e}")
+
                 except Exception as e:
-                    st.error(f"⚠️ Unexpected error: {e}")
+                    st.exception(e)
                 
 
 

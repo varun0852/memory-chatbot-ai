@@ -74,7 +74,7 @@ Overall Progress: **40%**
 
 # 🛡 Phase 3 — Reliability
 
-- [ ] Better exception handling
+- [x] Better exception handling
 - [ ] Retry API failures
 - [ ] Timeout handling
 - [ ] Input validation
