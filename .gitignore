@@ -4,6 +4,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
+*.pyd
 
 # -------------------------
 # Virtual Environment
@@ -64,3 +66,8 @@ dist/
 *.tmp
 *.bak
 *.swp
+
+# -------------------------
+# Database
+# -------------------------
+*.db

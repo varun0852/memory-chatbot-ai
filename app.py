@@ -2,7 +2,15 @@ import streamlit as st
 
 from backend import ChatBot
 
-from config import APP_TITLE, AUTHOR
+from datetime import datetime
+
+from utils.chat_utils import generate_session_id
+
+from config import APP_TITLE, AUTHOR, APP_VERSION
+
+from utils.exporter import export_as_text, export_as_markdown
+
+from utils.pdf_exporter import export_as_pdf
 
 
 st.set_page_config(
@@ -14,6 +22,23 @@ st.set_page_config(
 st.title(f"🧠 {APP_TITLE}")
 
 st.caption("Powered by AI")
+
+# Initialize session state variables       
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Generate a unique session ID for the conversation    
+
+if "session_id" not in st.session_state:
+    st.session_state.session_id = generate_session_id()
+
+# Metadata used by export features
+
+metadata = {
+    "conversation_id": st.session_state.session_id,
+    "exported_on": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+}
 
 with st.expander("ℹ️ About This Project"):
     st.markdown(f"""
@@ -36,7 +61,7 @@ A conversational AI chatbot built using **Groq**, **Llama 3.3 70B**, and **Strea
 - Streamlit
 - Groq API
 
-**Version:** 1.1
+f**Version:** v{APP_VERSION}
 
 ---
 👨‍💻 Built by **{AUTHOR}**
@@ -55,10 +80,76 @@ with st.sidebar:
 
         if "chatbot" in st.session_state:
             del st.session_state.chatbot
+        
+         # Generate a new conversation ID
+        st.session_state.session_id = generate_session_id()
+
 
         st.rerun()
 
     st.sidebar.divider()
+
+    # Export conversation
+    st.markdown("### 📤 Export Conversation")
+
+    st.info(
+        "Download the current conversation in different formats."
+    )
+
+    # Check whether there are any messages to export
+    has_messages = len(st.session_state.messages) > 0
+
+
+# Export conversation as TEXT file
+    txt_content = export_as_text(
+        st.session_state.messages,
+        metadata,
+    )
+
+    st.download_button(
+        label = "📄 Download TXT",
+        data = txt_content,
+        file_name = f"{metadata['conversation_id']}.txt",
+        mime = "text/plain",
+        disabled = not has_messages
+    )
+
+# Export conversation as MARKDOWN file
+    markdown_content = export_as_markdown(
+        st.session_state.messages,
+        metadata,
+    )
+
+    st.download_button(
+        label = "📝 Download Markdown",
+        data = markdown_content,
+        file_name = f"{metadata['conversation_id']}.md",
+        mime = "text/markdown",
+        disabled = not has_messages
+    )
+
+    # Export conversation as PDF file
+    pdf_content = export_as_pdf(
+        st.session_state.messages,
+        metadata,
+    )
+
+    st.download_button(
+        label = "📕 Download PDF",
+        data = pdf_content,
+        file_name = f"{metadata['conversation_id']}.pdf",
+        mime = "application/pdf",
+        disabled = not has_messages
+    )
+
+    if not has_messages:
+        st.caption("💡 Start a conversation to enable exporting")
+
+    # Display conversation ID
+
+    st.sidebar.markdown("### 💬 Conversation")
+
+    st.sidebar.code(st.session_state.session_id)
 
     st.sidebar.markdown(f"""
     ### 👨‍💻 Created by {AUTHOR}
@@ -66,6 +157,7 @@ with st.sidebar:
     AI Engineer • Generative AI
     """)
 
+# Initialize ChatBot instance
 
 if "chatbot" not in st.session_state:
     try:
@@ -73,8 +165,6 @@ if "chatbot" not in st.session_state:
     except ValueError as e:
         st.error(str(e))
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
 
 # Welcome screen
 
@@ -103,7 +193,11 @@ if prompt := st.chat_input("What would you like to talk about?"):
 
     with st.chat_message("user"):
         st.markdown(prompt)
-    st.session_state.messages.append({"role" : "user" , "content" : prompt})
+    st.session_state.messages.append({"role" : "user",
+                                      "content" : prompt,
+                                      "timestamp": datetime.now().strftime("%H:%M:%S"),
+                                      }
+                                    )
 
 
     if st.session_state.get("chatbot"):
@@ -120,9 +214,12 @@ if prompt := st.chat_input("What would you like to talk about?"):
                     st.session_state.messages.append(
                         {
                             "role": "assistant",
-                            "content": response_text
+                            "content": response_text,
+                            "timestamp": datetime.now().strftime("%H:%M:%S"),
                         }
                     )
+                    # Force Streamlit to rerun after the assistant message is added.
+                    st.rerun()
 
                 except Exception as e:
                     st.error(f"⚠️ Unexpected error: {e}")

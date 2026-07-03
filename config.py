@@ -37,5 +37,8 @@ Responsibilities:
 # Application Settings
 APP_TITLE = "Memory ChatBot AI"
 
+# Application Version
+APP_VERSION = "2.0"
+
 # Branding
 AUTHOR = "Varun"
