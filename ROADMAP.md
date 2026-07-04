@@ -85,9 +85,9 @@ Overall Progress: **40%**
 # 👨‍💻 Phase 4 — Developer Experience
 
 - [ ] Comprehensive tests
-- [ ] Type hints everywhere
+- [ ] Strong Typing
 - [ ] Better docstrings
-- [ ] Black formatting
+- [ ] Ruff + Black formatting
 - [ ] Changelog
 - [ ] Release notes
 

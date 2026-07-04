@@ -1,19 +1,37 @@
-from config import MODEL_NAME, APP_VERSION, AUTHOR
-
-from utils.chat_utils import get_chat_statistics
-
+# Standard Library
 from io import BytesIO
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, HRFlowable
+
+# Third-Party Library
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Table,
+    TableStyle,
+    Spacer,
+    HRFlowable,
+)
 
 from reportlab.lib.styles import getSampleStyleSheet
 
 from reportlab.lib import colors
 
 
+# Local Library
+from config import MODEL_NAME, APP_VERSION, AUTHOR
+
+from utils.chat_utils import get_chat_statistics
+
+from models import (
+    ChatMessage,
+    ConversationMetadata,
+    ChatStatistics,
+)
+
+
 # Create the metadata table displayed at the top of the PDF.
 def _create_metadata_table(
-    metadata: dict,
+    metadata: ConversationMetadata,
 ) -> Table:
     """
     Create the metadata table displayed
@@ -53,7 +71,7 @@ def _create_metadata_table(
 
 # Create the conversation statistics table.
 def _create_statistics_table(
-    stats: dict,
+    stats: ChatStatistics,
 ) -> Table:
     """
     Create the conversation statistics table.
@@ -113,7 +131,7 @@ def _create_statistics_table(
 
 # Build the complete PDF content.
 def _build_pdf_content(
-    history: list[dict],
+    history: list[ChatMessage],
     styles,
     metadata_table: Table,
     stats_table: Table,
@@ -201,7 +219,7 @@ def _build_pdf_content(
 
 # Build the conversation section of the PDF.
 def _build_conversation(
-    history: list[dict],
+    history: list[ChatMessage],
     styles,
 ) -> list:
     """
@@ -275,8 +293,8 @@ def _build_conversation(
     return conversation
 
 def export_as_pdf(
-        history: list[dict],
-        metadata: dict,
+        history: list[ChatMessage],
+        metadata: ConversationMetadata,
 ) -> bytes:
     """
     Generate a simple PDF and return it as bytes.
@@ -297,7 +315,7 @@ def export_as_pdf(
 
     # Get chat statistics from the conversation history
 
-    stats = get_chat_statistics(history)
+    stats: ChatStatistics = get_chat_statistics(history)
 
 # Create a table for conversation metadata
 

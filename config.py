@@ -7,6 +7,7 @@ all application-wide configuration in one place.
 
 import os
 from dotenv import load_dotenv
+import logging
 
 # Load environment variables
 load_dotenv()
@@ -43,6 +44,10 @@ APP_VERSION = "2.0"
 # Branding
 AUTHOR = "Varun"
 
+# Logging Configuration
+LOG_LEVEL = logging.INFO
+LOG_FORMAT = "%(asctime)s | %(levelname)s | %(message)s"
+LOG_FILE = "logs/app.log"
 
 # Retry Configuration
 

@@ -14,6 +14,8 @@ from utils.logger import logger
 
 from backend.exceptions import InvalidAPIKeyError, APIConnectionError, APITimeoutError, RateLimitError, ResponseError
 
+from models.chat import ChatMessage
+
 
 
 class ChatBot:
@@ -71,8 +73,8 @@ class ChatBot:
     
     def _build_messages(
     self,
-    history: list[dict],
-    ) -> list[dict]:
+    history: list[ChatMessage],
+    ) -> list[dict[str, str]]:
         """
         Build the conversation history in the format
         expected by the LLM.
@@ -98,8 +100,8 @@ class ChatBot:
 
     def chat(
     self,
-    user_message: str,
-    history: list[dict]
+    user_message: str,  # Reserved for future preprocessing, moderation, and analytics.
+    history: list[ChatMessage]
     ) -> str:
         """
         Generate a response from LLM using

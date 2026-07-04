@@ -14,8 +14,15 @@ from utils.pdf_exporter import export_as_pdf
 
 from utils.validator import validate_prompt
 
-from backend.exceptions import InvalidAPIKeyError, APIConnectionError, APITimeoutError, RateLimitError, ResponseError
+from backend.exceptions import (
+    InvalidAPIKeyError,
+    APIConnectionError,
+    APITimeoutError,
+    RateLimitError,
+    ResponseError
+)
 
+from models import ChatMessage, ConversationMetadata
 
 st.set_page_config(
     page_title=APP_TITLE,
@@ -39,7 +46,7 @@ if "session_id" not in st.session_state:
 
 # Metadata used by export features
 
-metadata = {
+metadata = ConversationMetadata = {
     "conversation_id": st.session_state.session_id,
     "exported_on": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
 }
@@ -204,11 +211,15 @@ if prompt := st.chat_input("What would you like to talk about?"):
 
     with st.chat_message("user"):
         st.markdown(prompt)
-    st.session_state.messages.append({"role" : "user",
-                                      "content" : prompt,
-                                      "timestamp": datetime.now().strftime("%H:%M:%S"),
-                                      }
-                                    )
+    
+    user_message: ChatMessage = {
+            "role" : "user",
+            "content" : prompt,
+            "timestamp": datetime.now().strftime("%H:%M:%S"),
+        }
+    
+    st.session_state.messages.append(user_message)
+
 
 
     if st.session_state.get("chatbot"):
@@ -222,13 +233,14 @@ if prompt := st.chat_input("What would you like to talk about?"):
 
                     st.markdown(response_text)
 
-                    st.session_state.messages.append(
-                        {
+                    assistant_message: ChatMessage = {
                             "role": "assistant",
                             "content": response_text,
                             "timestamp": datetime.now().strftime("%H:%M:%S"),
                         }
-                    )
+                    
+                    st.session_state.messages.append(assistant_message)
+                    
                     # Refresh the UI so the latest conversation state is displayed.
                     st.rerun()
 

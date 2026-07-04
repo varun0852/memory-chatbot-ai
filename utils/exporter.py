@@ -1,19 +1,19 @@
-from datetime import datetime
-
 from utils.chat_utils import get_chat_statistics
 
 from config import MODEL_NAME, APP_VERSION, AUTHOR
+
+from models import ChatMessage, ConversationMetadata , ChatStatistics
 
 
 
 # Export conversation history as a formatted text string
 
 def export_as_text(
-        history: list[dict],
-        metadata: dict,
+        history: list[ChatMessage],
+        metadata: ConversationMetadata,
     ) -> str:
 
-    stats = get_chat_statistics(history)
+    stats: ChatStatistics = get_chat_statistics(history)
 
     lines = [
         "=" * 50,
@@ -34,7 +34,7 @@ def export_as_text(
     for message in history:
 
         speaker = "👤 User" if message["role"] == "user" else "🤖 Assistant"
-        timestamp = message.get("timestamp", "Unknown Time")
+        timestamp = message["timestamp"]
 
 
         lines.extend(
@@ -54,8 +54,8 @@ def export_as_text(
 # Export conversation history as a formatted Markdown string
 
 def export_as_markdown(
-        history: list[dict],
-        metadata: dict,
+        history: list[ChatMessage],
+        metadata: ConversationMetadata,
     ) -> str:
 
     stats = get_chat_statistics(history)
@@ -99,7 +99,7 @@ def export_as_markdown(
     
         speaker = "👤 User" if message["role"] == "user" else "🤖 Assistant"
 
-        timestamp = message.get("timestamp", "Unknown Time")
+        timestamp = message["timestamp"]
 
         lines.extend(
             [

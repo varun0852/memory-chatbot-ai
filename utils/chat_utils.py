@@ -1,6 +1,10 @@
 from datetime import datetime
 
+from typing import Any
+
 import uuid
+
+from models import ChatMessage, ChatStatistics
 
 
 def generate_session_id() -> str:
@@ -13,7 +17,9 @@ def generate_session_id() -> str:
 
 
 
-def get_chat_statistics(history: list[dict]) -> dict:
+def get_chat_statistics(
+    history: list[ChatMessage],
+) -> ChatStatistics:
     """
     Calculate useful statistics for the current conversation.
 

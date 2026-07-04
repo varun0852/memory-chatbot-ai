@@ -7,10 +7,16 @@ the entire application.
 
 import logging
 
+from config import LOG_LEVEL, LOG_FORMAT, LOG_FILE
+
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s",
+    level=LOG_LEVEL,
+    format=LOG_FORMAT,
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(LOG_FILE, encoding="utf-8"),
+    ],
 )
 
 logger = logging.getLogger("MemoryChatBotAI")
