@@ -264,6 +264,10 @@ class ChatBot:
             stream=True,
         )
 
+        print(type(stream.response))
+        print(stream.response)
+        print(dir(stream.response))
+
         # for chunk in stream:
         #     delta = chunk.choices[0].delta.content
 
