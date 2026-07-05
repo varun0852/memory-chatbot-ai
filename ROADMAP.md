@@ -33,7 +33,7 @@ Overall Progress: **40%**
 - [x] Better UI
 - [ ] Clear conversation confirmation
 - [ ] Theme-aware styling
-- [ ] Streaming responses
+- [x] Streaming responses (Some testing remaining)
 - [ ] Model selector
 - [ ] Token usage statistics
 
@@ -85,7 +85,8 @@ Overall Progress: **40%**
 # 👨‍💻 Phase 4 — Developer Experience
 
 - [ ] Comprehensive tests
-- [ ] Strong Typing
+- [x] Strong Typing
+- [x] Architecture Cleanup
 - [ ] Better docstrings
 - [ ] Ruff + Black formatting
 - [ ] Changelog

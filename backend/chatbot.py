@@ -6,7 +6,17 @@ from groq import (
     RateLimitError as GroqRateLimitError,
     APIResponseValidationError,)
 
-from config import GROQ_API_KEY, MODEL_NAME, TEMPERATURE, SYSTEM_PROMPT, MAX_RETRIES, RETRY_DELAY, REQUEST_TIMEOUT
+from collections.abc import Generator
+
+from config import (
+    GROQ_API_KEY,
+    DEFAULT_MODEL,
+    TEMPERATURE,
+    SYSTEM_PROMPT,
+    MAX_RETRIES,
+    RETRY_DELAY,
+    REQUEST_TIMEOUT,
+)
 
 import time
 
@@ -14,7 +24,7 @@ from utils.logger import logger
 
 from backend.exceptions import InvalidAPIKeyError, APIConnectionError, APITimeoutError, RateLimitError, ResponseError
 
-from models.chat import ChatMessage
+from models import ChatMessage
 
 
 
@@ -31,7 +41,11 @@ class ChatBot:
     """
 
 
-    def __init__(self, api_key: str | None = None):
+    def __init__(
+            self,
+            api_key: str | None = None,
+            model: str = DEFAULT_MODEL,
+            ):
 
         """
         Initialize the chatbot.
@@ -41,6 +55,8 @@ class ChatBot:
         """
 
         self.api_key = api_key or GROQ_API_KEY
+
+        self.model = model
 
         if not self.api_key:
             logger.error("No API key is provided.")
@@ -67,11 +83,13 @@ class ChatBot:
             timeout=REQUEST_TIMEOUT
         )
 
-        logger.info(f"Loaded model: {MODEL_NAME}")
+        logger.info(f"Loaded model: {self.model}")
 
         return client
     
-    def _build_messages(
+
+# prepares data
+    def _build_messages( 
     self,
     history: list[ChatMessage],
     ) -> list[dict[str, str]]:
@@ -98,22 +116,21 @@ class ChatBot:
         return messages
     
 
-    def chat(
-    self,
-    user_message: str,  # Reserved for future preprocessing, moderation, and analytics.
-    history: list[ChatMessage]
-    ) -> str:
-        """
-        Generate a response from LLM using
-        the previous conversation history.
-        """
+# manages retries/errors
 
-        messages = self._build_messages(history)
-
+    def _execute_request(
+        self,
+        messages: list[dict[str, str]],
+        stream: bool,
+    ):
+        """
+        Execute an LLM request with retry logic and
+        centralized exception handling.
+        """
 
         logger.info("Sending request to LLM...")
 
-        for attempt in range(1, MAX_RETRIES +1):
+        for attempt in range(1, MAX_RETRIES + 1):
 
             try:
 
@@ -122,15 +139,16 @@ class ChatBot:
                 )
 
                 response = self.client.chat.completions.create(
-                    model=MODEL_NAME,
+                    model=self.model,
                     messages=messages,
                     temperature=TEMPERATURE,
+                    stream=stream,
                 )
 
                 logger.info("Response received successfully.")
 
-                return response.choices[0].message.content
-            
+                return response
+
             except GroqAPIConnectionError as e:
 
                 logger.warning(
@@ -140,7 +158,7 @@ class ChatBot:
                 if attempt == MAX_RETRIES:
 
                     logger.exception(
-                        "Failed to connect to AI service. after all retry attempts."
+                        "Failed to connect to AI service after all retry attempts."
                     )
 
                     raise APIConnectionError(
@@ -175,7 +193,6 @@ class ChatBot:
 
                 time.sleep(RETRY_DELAY)
 
-            
             except AuthenticationError as e:
 
                 logger.exception("Authentication failed.")
@@ -183,18 +200,15 @@ class ChatBot:
                 raise InvalidAPIKeyError(
                     "The provided API key is invalid."
                 ) from e
-            
-            
-            
+
             except GroqRateLimitError as e:
 
-                logger.exception("API rate limit exceeded")
+                logger.exception("API rate limit exceeded.")
 
                 raise RateLimitError(
-                    "Rate limit exceed. Please try again in a few moments."
+                    "Rate limit exceeded. Please try again in a few moments."
                 ) from e
-            
-            
+
             except APIResponseValidationError as e:
 
                 logger.exception("Invalid response from LLM.")
@@ -202,8 +216,7 @@ class ChatBot:
                 raise ResponseError(
                     "The AI returned an invalid response."
                 ) from e
-            
-            
+
             except Exception as e:
 
                 logger.exception("Unexpected chatbot error.")
@@ -211,4 +224,54 @@ class ChatBot:
                 raise ResponseError(
                     "An unexpected error occurred while generating a response."
                 ) from e
-            
+
+
+# returns a complete response
+    def chat(
+    self,
+    user_message: str,  # Reserved for future preprocessing, moderation, and analytics.
+    history: list[ChatMessage]
+    ) -> str:
+        """
+        Generate a response from LLM using
+        the previous conversation history.
+        """
+
+        messages = self._build_messages(history)
+
+
+        response = self._execute_request(
+            messages=messages,
+            stream=False
+        )
+
+        return response.choices[0].message.content
+
+ # yields streamed chunks   
+    def stream_chat(
+        self,
+        user_message: str,
+        history: list[ChatMessage],
+    ) -> Generator[str, None, None]:
+        """
+        Stream a response from the LLM.
+        """
+
+        messages = self._build_messages(history)
+
+        stream = self._execute_request(
+            messages=messages,
+            stream=True,
+        )
+
+        # for chunk in stream:
+        #     delta = chunk.choices[0].delta.content
+
+        #     if delta:
+        #         yield delta
+
+        for chunk in stream:
+            delta = chunk.choices[0].delta.content
+
+            if delta:
+                yield delta

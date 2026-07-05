@@ -18,6 +18,27 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 # Llama Model
 MODEL_NAME = "llama-3.3-70b-versatile"
 
+AVAILABLE_MODELS = [
+    {
+        "name": "Llama 3.3 70B",
+        "id": "llama-3.3-70b-versatile",
+        "description": "⭐ Best quality (Recommended)",
+    },
+    {
+        "name": "Llama 3.1 8B",
+        "id": "llama-3.1-8b-instant",
+        "description": "⚡ Fast responses",
+    },
+    {
+        "name": "Gemma 2 9B",
+        "id": "gemma2-9b-it",
+        "description": "💡 Lightweight model",
+    },
+]
+
+DEFAULT_MODEL = "llama-3.3-70b-versatile"
+
+
 # Temperature for response generation
 TEMPERATURE = 0.7
 
