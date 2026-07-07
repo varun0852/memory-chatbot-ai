@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from utils.chat_utils import generate_session_id
 
 
@@ -18,3 +20,7 @@ def reset_chat_session() -> None:
 
 # Generate a conversation id
     st.session_state.session_id = generate_session_id()
+
+    st.session_state.created_at = datetime.now().strftime(
+    "%Y-%m-%d %H:%M:%S"
+    )

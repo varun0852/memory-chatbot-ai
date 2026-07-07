@@ -1,51 +1,57 @@
+# Standard Library
+import time
+from collections.abc import Generator
+
+# Third-Party
 from groq import (
-    Groq, 
+    Groq,
     AuthenticationError,
     APIConnectionError as GroqAPIConnectionError,
     APITimeoutError as GroqAPITimeoutError,
+    APIResponseValidationError,
     RateLimitError as GroqRateLimitError,
-    APIResponseValidationError,)
-
-from collections.abc import Generator
-
-from config import (
-    GROQ_API_KEY,
-    DEFAULT_MODEL,
-    TEMPERATURE,
-    SYSTEM_PROMPT,
-    MAX_RETRIES,
-    RETRY_DELAY,
-    REQUEST_TIMEOUT,
 )
 
-import time
-
-from utils.logger import logger
-
-from backend.exceptions import InvalidAPIKeyError, APIConnectionError, APITimeoutError, RateLimitError, ResponseError
-
+# Local
+from backend.exceptions import (
+    APIConnectionError,
+    APITimeoutError,
+    InvalidAPIKeyError,
+    RateLimitError,
+    ResponseError,
+)
+from config import (
+    DEFAULT_MODEL,
+    GROQ_API_KEY,
+    MAX_RETRIES,
+    REQUEST_TIMEOUT,
+    RETRY_DELAY,
+    SYSTEM_PROMPT,
+    TEMPERATURE,
+)
 from models import ChatMessage
+from utils.logger import logger
 
 
 
 class ChatBot:
 
     """
-        ChatBot manages all communication with the LLM provider.
+    ChatBot manages all communication with the LLM provider.
 
-        Responsibilities:
-        - Configure LLM client
-        - Build conversation messages
-        - Send chat requests
-        - Return AI responses
+    Responsibilities:
+    - Configure LLM client
+    - Build conversation messages
+    - Send chat requests
+    - Return AI responses
     """
 
 
     def __init__(
-            self,
-            api_key: str | None = None,
-            model: str = DEFAULT_MODEL,
-            ):
+        self,
+        api_key: str | None = None,
+        model: str = DEFAULT_MODEL,
+    ):
 
         """
         Initialize the chatbot.
@@ -71,6 +77,10 @@ class ChatBot:
         logger.info("ChatBot initialized successfully.")
 
 
+# ==========================================================
+# Client Configuration
+# ==========================================================
+
     def _configure_client(self):
         """
         Configure the LLM client and return it.
@@ -88,10 +98,14 @@ class ChatBot:
         return client
     
 
-# prepares data
-    def _build_messages( 
-    self,
-    history: list[ChatMessage],
+# ==========================================================
+# Message Preparation
+# ==========================================================
+
+    def _build_messages(
+        self,
+        history: list[ChatMessage],
+        document_text: str | None = None,
     ) -> list[dict[str, str]]:
         """
         Build the conversation history in the format
@@ -105,18 +119,32 @@ class ChatBot:
             }
         ]
 
+        if document_text:
+            messages.append(
+                {
+                    "role": "system",
+                    "content": (
+                        "The user has uploaded the following document. "
+                        "Use it as context when answering questions.\n\n"
+                        f"{document_text}"
+                    )
+                }
+            )
+
         for message in history:
             messages.append(
                 {
                     "role": message["role"],
-                    "content": message["content"]
+                    "content": message["content"],
                 }
             )
 
         return messages
     
 
-# manages retries/errors
+# ==========================================================
+# Request Execution
+# ==========================================================
 
     def _execute_request(
         self,
@@ -145,7 +173,7 @@ class ChatBot:
                     stream=stream,
                 )
 
-                logger.info("Response received successfully.")
+                logger.info("LLM response received successfully.")
 
                 return response
 
@@ -162,7 +190,8 @@ class ChatBot:
                     )
 
                     raise APIConnectionError(
-                        "Unable to connect to the AI service. Please check your internet connection and try again."
+                        "Unable to connect to the AI service. "
+                        "Please check your internet connection or try again in a few moments."
                     ) from e
 
                 logger.info(
@@ -226,53 +255,56 @@ class ChatBot:
                 ) from e
 
 
-# returns a complete response
+# ==========================================================
+# Standard Chat
+# ==========================================================
+
     def chat(
-    self,
-    user_message: str,  # Reserved for future preprocessing, moderation, and analytics.
-    history: list[ChatMessage]
+        self,
+        user_message: str,  # Reserved for future preprocessing, moderation, and analytics.
+        history: list[ChatMessage],
+        document_text: str | None = None,
     ) -> str:
         """
         Generate a response from LLM using
         the previous conversation history.
         """
 
-        messages = self._build_messages(history)
-
+        messages = self._build_messages(
+            history=history,
+            document_text=document_text,
+        )
 
         response = self._execute_request(
             messages=messages,
-            stream=False
+            stream=False,
         )
 
         return response.choices[0].message.content
 
- # yields streamed chunks   
+
+# ==========================================================
+# Streaming Chat
+# ==========================================================
     def stream_chat(
         self,
         user_message: str,
         history: list[ChatMessage],
+        document_text: str | None = None,
     ) -> Generator[str, None, None]:
         """
         Stream a response from the LLM.
         """
 
-        messages = self._build_messages(history)
+        messages = self._build_messages(
+            history=history,
+            document_text=document_text,
+        )
 
         stream = self._execute_request(
             messages=messages,
             stream=True,
         )
-
-        print(type(stream.response))
-        print(stream.response)
-        print(dir(stream.response))
-
-        # for chunk in stream:
-        #     delta = chunk.choices[0].delta.content
-
-        #     if delta:
-        #         yield delta
 
         for chunk in stream:
             delta = chunk.choices[0].delta.content

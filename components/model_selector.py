@@ -14,7 +14,6 @@ def render_model_selector(current_model: str) -> str | None:
         Otherwise None.
     """
 
-    st.markdown("### 🤖 AI Model")
 
     current = next(
         model

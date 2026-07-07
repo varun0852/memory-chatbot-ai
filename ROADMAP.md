@@ -6,7 +6,7 @@
 
 # 📌 Progress
 
-Overall Progress: **40%**
+Overall Progress: **75%**
 
 ---
 
@@ -31,11 +31,11 @@ Overall Progress: **40%**
 - [x] Session ID
 - [x] Message timestamps
 - [x] Better UI
-- [ ] Clear conversation confirmation
-- [ ] Theme-aware styling
-- [x] Streaming responses (Some testing remaining)
-- [ ] Model selector
-- [ ] Token usage statistics
+- [x] Clear conversation confirmation
+- [x] Theme-aware styling
+- [x] Streaming responses
+- [x] Model selector
+- [->] Token usage statistics(Moved to V3)
 
 ## Export
 
@@ -76,9 +76,9 @@ Overall Progress: **40%**
 
 - [x] Better exception handling
 - [x] Retry API failures
-- [ ] Timeout handling
+- [x] Timeout handling
 - [x] Input validation
-- [ ] Better status messages(moved to phase 5 as Multi-stage status updates using st.status())
+- [->] Better status messages(moved to phase 5 as Multi-stage status updates using st.status())
 
 ---
 
@@ -96,39 +96,40 @@ Overall Progress: **40%**
 
 # 📄 Phase 5 — Document Chat
 
-- [ ] Upload PDF
-- [ ] Extract PDF text
-- [ ] Chat with PDF
-- [ ] PDF + Memory
-- [ ] Multi-stage status updates using st.status()
+- [x] Upload PDF
+- [x] Extract PDF text
+- [x] Chat with PDF
+- [x] PDF + Memory
+- [x] Multi-stage status updates using st.status()
 
 ---
 
 # 💾 Phase 6 — Conversation Management
 
-- [ ] Save conversation
-- [ ] Load conversation
-- [ ] Delete conversation
-- [ ] Search conversation
-- [ ] Conversation history
+- [x] Save conversation
+- [x] Load conversation
+- [x] Delete conversation
+- [x] Search conversation
+- [x] Conversation history
 
 ---
 
 # 📊 Phase 7 — Analytics
 
-- [ ] Total conversations
-- [ ] Total messages
-- [ ] Session duration
-- [ ] Export statistics
-- [ ] Token statistics
+- [x] Total conversations
+- [x] Total messages
+- [x] Current Session Insights
+- [x] Export statistics
+- [->] Token statistics (Moved to V3)
 
 ---
 
-# 🔗 Phase 8 — Sharing
+# 🌍 Phase 8 — Conversation Portability
 
-- [ ] Share conversation
-- [ ] Export share file
-- [ ] Future share link support
+- [->] Copy conversation(Moved to V3) 
+- [x] Export share package (.chat)
+- [ ] Import Conversation Package (.chat)
+- [->] Future share link support(Moved to V3)
 
 ---
 
@@ -164,6 +165,10 @@ Overall Progress: **40%**
 - [ ] RAG knowledge base
 - [ ] Agents
 - [ ] Authentication
+- [ ] Token usage statistics
+- [ ] Cost Estimation
+- [ ] Analytics Dashboard
+- [ ] Auto Provider Detection (API Key)
 
 
 ## Development Timeline
