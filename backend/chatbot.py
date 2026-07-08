@@ -33,9 +33,7 @@ from models import ChatMessage
 from utils.logger import logger
 
 
-
 class ChatBot:
-
     """
     ChatBot manages all communication with the LLM provider.
 
@@ -46,13 +44,11 @@ class ChatBot:
     - Return AI responses
     """
 
-
     def __init__(
         self,
         api_key: str | None = None,
         model: str = DEFAULT_MODEL,
     ):
-
         """
         Initialize the chatbot.
 
@@ -68,18 +64,16 @@ class ChatBot:
             logger.error("No API key is provided.")
 
             raise InvalidAPIKeyError(
-                "API key not found. " 
-                "Add it to .env or enter it in the sidebar"
+                "API key not found. " "Add it to .env or enter it in the sidebar"
             )
 
         self.client = self._configure_client()
 
         logger.info("ChatBot initialized successfully.")
 
-
-# ==========================================================
-# Client Configuration
-# ==========================================================
+    # ==========================================================
+    # Client Configuration
+    # ==========================================================
 
     def _configure_client(self):
         """
@@ -88,19 +82,15 @@ class ChatBot:
 
         logger.info("Configuring LLM client...")
 
-        client = Groq(
-            api_key=self.api_key,
-            timeout=REQUEST_TIMEOUT
-        )
+        client = Groq(api_key=self.api_key, timeout=REQUEST_TIMEOUT)
 
         logger.info(f"Loaded model: {self.model}")
 
         return client
-    
 
-# ==========================================================
-# Message Preparation
-# ==========================================================
+    # ==========================================================
+    # Message Preparation
+    # ==========================================================
 
     def _build_messages(
         self,
@@ -127,7 +117,7 @@ class ChatBot:
                         "The user has uploaded the following document. "
                         "Use it as context when answering questions.\n\n"
                         f"{document_text}"
-                    )
+                    ),
                 }
             )
 
@@ -140,11 +130,10 @@ class ChatBot:
             )
 
         return messages
-    
 
-# ==========================================================
-# Request Execution
-# ==========================================================
+    # ==========================================================
+    # Request Execution
+    # ==========================================================
 
     def _execute_request(
         self,
@@ -194,31 +183,23 @@ class ChatBot:
                         "Please check your internet connection or try again in a few moments."
                     ) from e
 
-                logger.info(
-                    f"Retrying in {RETRY_DELAY} seconds..."
-                )
+                logger.info(f"Retrying in {RETRY_DELAY} seconds...")
 
                 time.sleep(RETRY_DELAY)
 
             except GroqAPITimeoutError as e:
 
-                logger.warning(
-                    f"Timeout on attempt {attempt}/{MAX_RETRIES}: {e}"
-                )
+                logger.warning(f"Timeout on attempt {attempt}/{MAX_RETRIES}: {e}")
 
                 if attempt == MAX_RETRIES:
 
-                    logger.exception(
-                        "LLM request timed out after all retry attempts."
-                    )
+                    logger.exception("LLM request timed out after all retry attempts.")
 
                     raise APITimeoutError(
                         "The request timed out. Please try again."
                     ) from e
 
-                logger.info(
-                    f"Retrying in {RETRY_DELAY} seconds..."
-                )
+                logger.info(f"Retrying in {RETRY_DELAY} seconds...")
 
                 time.sleep(RETRY_DELAY)
 
@@ -226,9 +207,7 @@ class ChatBot:
 
                 logger.exception("Authentication failed.")
 
-                raise InvalidAPIKeyError(
-                    "The provided API key is invalid."
-                ) from e
+                raise InvalidAPIKeyError("The provided API key is invalid.") from e
 
             except GroqRateLimitError as e:
 
@@ -242,9 +221,7 @@ class ChatBot:
 
                 logger.exception("Invalid response from LLM.")
 
-                raise ResponseError(
-                    "The AI returned an invalid response."
-                ) from e
+                raise ResponseError("The AI returned an invalid response.") from e
 
             except Exception as e:
 
@@ -254,10 +231,9 @@ class ChatBot:
                     "An unexpected error occurred while generating a response."
                 ) from e
 
-
-# ==========================================================
-# Standard Chat
-# ==========================================================
+    # ==========================================================
+    # Standard Chat
+    # ==========================================================
 
     def chat(
         self,
@@ -282,10 +258,9 @@ class ChatBot:
 
         return response.choices[0].message.content
 
-
-# ==========================================================
-# Streaming Chat
-# ==========================================================
+    # ==========================================================
+    # Streaming Chat
+    # ==========================================================
     def stream_chat(
         self,
         user_message: str,

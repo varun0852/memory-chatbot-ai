@@ -14,16 +14,10 @@ def validate_prompt(prompt: str) -> None:
     """
 
     if not prompt:
-        raise ValueError(
-            "Prompt cannot be empty."
-        )
-    
+        raise ValueError("Prompt cannot be empty.")
+
     if not prompt.strip():
-        raise ValueError(
-            "Prompt cannot contain only whitespace."
-        )
+        raise ValueError("Prompt cannot contain only whitespace.")
 
     if len(prompt) > MAX_PROMPT_LENGTH:
-        raise ValueError(
-            f"Prompt cannot exceed {MAX_PROMPT_LENGTH} characters."
-        )
+        raise ValueError(f"Prompt cannot exceed {MAX_PROMPT_LENGTH} characters.")

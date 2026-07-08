@@ -18,9 +18,7 @@ def reset_chat_session() -> None:
     if "chatbot" in st.session_state:
         del st.session_state.chatbot
 
-# Generate a conversation id
+    # Generate a conversation id
     st.session_state.session_id = generate_session_id()
 
-    st.session_state.created_at = datetime.now().strftime(
-    "%Y-%m-%d %H:%M:%S"
-    )
+    st.session_state.created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

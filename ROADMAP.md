@@ -82,13 +82,13 @@ Overall Progress: **75%**
 
 ---
 
-# 👨‍💻 Phase 4 — Developer Experience
+# 👨‍💻 Phase 4 — Developer Experience (Done after phase 8)
 
 - [ ] Comprehensive tests
 - [x] Strong Typing
 - [x] Architecture Cleanup
 - [ ] Better docstrings
-- [ ] Ruff + Black formatting
+- [x] Ruff + Black formatting
 - [ ] Changelog
 - [ ] Release notes
 
@@ -128,7 +128,7 @@ Overall Progress: **75%**
 
 - [->] Copy conversation(Moved to V3) 
 - [x] Export share package (.chat)
-- [ ] Import Conversation Package (.chat)
+- [x] Import Conversation Package (.chat)
 - [->] Future share link support(Moved to V3)
 
 ---

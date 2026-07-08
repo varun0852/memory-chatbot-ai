@@ -24,9 +24,7 @@ def export_chat_package(
         "version": "2.0",
         "metadata": {
             **metadata,
-            "source_conversation_id": metadata[
-                "conversation_id"
-            ],
+            "source_conversation_id": metadata["conversation_id"],
         },
         "messages": messages,
     }
@@ -44,41 +42,29 @@ def import_chat_package(
     """
     Import a conversation package.
     """
-# Validation
+    # Validation
 
-    # validation 1 no name change 
+    # validation 1 no name change
     try:
         data = json.loads(package)
 
     except json.JSONDecodeError:
-        raise ValueError(
-            "Invalid conversation package."
-        )
-    
+        raise ValueError("Invalid conversation package.")
+
     # validation 2 Application
     if data.get("application") != "Memory ChatBot AI":
-        raise ValueError(
-            "This file was not created by Memory ChatBot AI."
-        )
-    
+        raise ValueError("This file was not created by Memory ChatBot AI.")
+
     # validation 3 Version
     if data.get("version") != "2.0":
-        raise ValueError(
-            "Unsupported conversation version."
-        )
-    
+        raise ValueError("Unsupported conversation version.")
+
     # Validation 4 Required Fields
     if "messages" not in data:
-        raise ValueError(
-            "Conversation data is missing."
-        )
+        raise ValueError("Conversation data is missing.")
 
     if "metadata" not in data:
-        raise ValueError(
-            "Conversation metadata is missing."
-        )
-    
-
+        raise ValueError("Conversation metadata is missing.")
 
     return (
         data["messages"],

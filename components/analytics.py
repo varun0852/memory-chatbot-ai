@@ -10,7 +10,6 @@ from datetime import datetime
 import streamlit as st
 
 
-
 def render_metric_rows(
     metrics: list[tuple[str, str | int | float]],
 ) -> None:
@@ -67,9 +66,7 @@ def render_current_session() -> None:
 
     session_duration = datetime.now() - session_start
 
-    duration_seconds = int(
-        session_duration.total_seconds()
-    )
+    duration_seconds = int(session_duration.total_seconds())
 
     if duration_seconds < 60:
         duration = "Just now"
@@ -83,7 +80,6 @@ def render_current_session() -> None:
         minutes = (duration_seconds % 3600) // 60
         duration = f"{hours}h {minutes}m"
 
-        
     session_metrics = [
         (
             "💬 Messages",
@@ -104,7 +100,6 @@ def render_current_session() -> None:
     ]
 
     render_metric_rows(session_metrics)
-
 
 
 def render_conversation_statistics(
@@ -155,5 +150,5 @@ def render_analytics(
     st.markdown("### 📊 Analytics")
 
     render_conversation_statistics(statistics)
-    
+
     render_current_session()

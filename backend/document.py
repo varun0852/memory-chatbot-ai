@@ -9,6 +9,7 @@ from io import BytesIO
 
 from PyPDF2 import PdfReader
 
+
 class DocumentProcessor:
     """
     Handles document parsing and text extraction.
@@ -36,5 +37,3 @@ class DocumentProcessor:
                 pages.append(text)
 
         return "\n\n".join(pages)
-    
-    

@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from typing import Any
 
 import uuid
 
@@ -16,7 +15,6 @@ def generate_session_id() -> str:
     return str(uuid.uuid4())[:8].upper()
 
 
-
 def get_chat_statistics(
     history: list[ChatMessage],
 ) -> ChatStatistics:
@@ -29,7 +27,7 @@ def get_chat_statistics(
     message_count = len(history)
 
     if message_count == 0:
-        session_duration = "0 sec" 
+        session_duration = "0 sec"
 
     else:
         start_time = datetime.strptime(
@@ -48,7 +46,7 @@ def get_chat_statistics(
 
         if seconds < 60:
             session_duration = f"{seconds} sec"
-        
+
         elif seconds < 3600:
             minutes = seconds // 60
             remaining_seconds = seconds % 60
@@ -61,20 +59,13 @@ def get_chat_statistics(
 
             session_duration = f"{hours} hr {minutes} min"
 
-    user_messages = sum(
-        1 for message in history
-        if message["role"] == "user"
-    )
+    user_messages = sum(1 for message in history if message["role"] == "user")
 
-    assistant_messages = sum(
-        1 for message in history
-        if message["role"] == "assistant"
-    )
-
+    assistant_messages = sum(1 for message in history if message["role"] == "assistant")
 
     return {
         "message_count": message_count,
         "user_messages": user_messages,
         "assistant_messages": assistant_messages,
-        "session_duration": session_duration
+        "session_duration": session_duration,
     }

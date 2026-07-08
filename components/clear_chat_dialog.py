@@ -32,4 +32,3 @@ def clear_chat_dialog() -> bool:
         ):
             st.session_state.clear_chat_confirmed = True
             st.rerun()
-            

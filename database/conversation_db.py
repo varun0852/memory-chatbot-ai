@@ -8,7 +8,6 @@ import json
 import sqlite3
 from pathlib import Path
 
-
 DATABASE_PATH = Path("database/chatbot.db")
 
 
@@ -33,8 +32,7 @@ class ConversationDatabase:
 
             cursor = connection.cursor()
 
-            cursor.execute(
-                """
+            cursor.execute("""
                 CREATE TABLE IF NOT EXISTS conversations (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     session_id TEXT UNIQUE,
@@ -43,8 +41,7 @@ class ConversationDatabase:
                     messages TEXT,
                     total_exports INTEGER DEFAULT 0
                 )
-                """
-            )
+                """)
 
             connection.commit()
 
@@ -107,16 +104,14 @@ class ConversationDatabase:
 
             cursor = connection.cursor()
 
-            cursor.execute(
-                """
+            cursor.execute("""
                 SELECT
                     session_id,
                     title,
                     created_at
                 FROM conversations
                 ORDER BY created_at DESC
-                """
-            )
+                """)
 
             return cursor.fetchall()
 
@@ -234,14 +229,12 @@ class ConversationDatabase:
 
             cursor = connection.cursor()
 
-            cursor.execute(
-                """
+            cursor.execute("""
                 SELECT
                     messages,
                     total_exports
                 FROM conversations
-                """
-            )
+                """)
 
             conversations = cursor.fetchall()
 
@@ -269,9 +262,7 @@ class ConversationDatabase:
                     assistant_messages += 1
 
         average_messages = (
-            total_messages / total_conversations
-            if total_conversations > 0
-            else 0
+            total_messages / total_conversations if total_conversations > 0 else 0
         )
 
         return {

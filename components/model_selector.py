@@ -14,17 +14,9 @@ def render_model_selector(current_model: str) -> str | None:
         Otherwise None.
     """
 
+    current = next(model for model in AVAILABLE_MODELS if model["id"] == current_model)
 
-    current = next(
-        model
-        for model in AVAILABLE_MODELS
-        if model["id"] == current_model
-    )
-
-    st.success(
-        f"**{current['name']}**\n\n"
-        f"{current['description']}"
-    )
+    st.success(f"**{current['name']}**\n\n" f"{current['description']}")
 
     st.divider()
 
@@ -39,9 +31,7 @@ def render_model_selector(current_model: str) -> str | None:
     )
 
     selected = next(
-        model
-        for model in AVAILABLE_MODELS
-        if model["name"] == selected_name
+        model for model in AVAILABLE_MODELS if model["name"] == selected_name
     )
 
     st.info(

@@ -11,9 +11,6 @@ bot = ChatBot()
 
 history = []
 
-response = bot.chat(
-    "Hello! Who are you?",
-    history
-)
+response = bot.chat("Hello! Who are you?", history)
 
 print(response)

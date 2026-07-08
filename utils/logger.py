@@ -9,7 +9,6 @@ import logging
 
 from config import LOG_LEVEL, LOG_FORMAT, LOG_FILE
 
-
 logging.basicConfig(
     level=LOG_LEVEL,
     format=LOG_FORMAT,
