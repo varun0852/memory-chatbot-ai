@@ -1,4 +1,8 @@
 streamlit==1.47.0
-google-generativeai==0.8.6
+groq
 python-dotenv==1.1.1
 reportlab
+PyPDF2
+pytest
+ruff
+black
