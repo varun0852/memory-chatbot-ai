@@ -1,168 +1,238 @@
-# 🧠 Memory ChatBot Gemini
+# 🤖 Memory ChatBot AI
+
+A production-ready conversational AI assistant built with **Streamlit**, **Groq LLM**, and modern software engineering practices. Memory ChatBot AI features persistent conversation history, PDF document chat, conversation analytics, import/export capabilities, and a modular architecture designed for maintainability and scalability.
+
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.47-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Groq](https://img.shields.io/badge/Groq-LLM-black?style=for-the-badge)](https://groq.com/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+---
+
+## 🚀 Live Demo
+
+### 🌐 Try the application
+
+**https://memory-chatbot-ai-uw69hmnown9nzxj7kxouft.streamlit.app/**
+
+---
+
+## 🎬 Demo
 
 <p align="center">
-
-![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python)
-![Streamlit](https://img.shields.io/badge/Streamlit-Live-red?style=for-the-badge&logo=streamlit)
-![Google Gemini](https://img.shields.io/badge/Google-Gemini-4285F4?style=for-the-badge&logo=google)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge)
-
-</p>
-
-<p align="center">
-
-### 💬 Production-Ready Conversational AI Chatbot
-
-Built with **Google Gemini**, **Streamlit**, and **Object-Oriented Python** to demonstrate modern AI application development, secure API management, conversation memory, and clean software architecture.
-
+<img src="assets/demo/memory-chatbot-demo.gif" width="900">
 </p>
 
 ---
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=streamlit)](https://memory-chatbot-gemini-25q3c4mearaem3fntqtzze.streamlit.app/)
+# 📸 Screenshots
+
+## 🏠 Welcome Screen
+
+![](assets/screenshots/welcome.png)
 
 ---
 
-# 📸 Application Preview
+## 💬 AI Conversation
 
-## 🏠 Home Screen
-
-![Home](assets/home.png)
+![](assets/screenshots/chat.png)
 
 ---
 
-## 💬 Chat in Action
+## 📄 Chat with PDF Documents
 
-![Chat](assets/chat.png)
+![](assets/screenshots/document-chat.png)
 
 ---
 
-## ℹ️ About Section
+## 📚 Conversation History
 
-![About](assets/about.png)
+![](assets/screenshots/conversation-history.png)
+
+---
+
+## 📊 Analytics Dashboard
+
+![](assets/screenshots/analytics.png)
+
+---
+
+## 📤 Export Conversations
+
+![](assets/screenshots/export.png)
+
+---
+
+## 📥 Import Conversations
+
+![](assets/screenshots/import.png)
 
 ---
 
 # ✨ Features
 
-## 🤖 AI Features
+## 💬 Conversation Management
 
-- 💬 Multi-turn conversations
-- 🧠 Conversation memory
-- 🤖 Google Gemini integration
-- ⚡ Fast AI responses
-
----
-
-## 💻 Software Engineering
-
-- 🏗️ Object-Oriented Programming (OOP)
-- 📝 Logging
-- 🧪 Backend Testing
-- 🔒 Secure API Key Management
-- ⚠️ Exception Handling
+- Multi-turn AI conversations
+- Persistent conversation history
+- Search previous conversations
+- Delete conversations
+- Automatic session management
 
 ---
 
-## 🎨 User Experience
+## 📄 Document Chat
 
-- 👋 Welcome Screen
-- ℹ️ About Project Section
-- 🗑️ Clear Chat Button
-- 🔑 API Key Override
-- 🌙 Modern Dark UI
-- 👨‍💻 Personal Branding
+- Upload PDF documents
+- Ask questions about uploaded documents
+- Extract document text automatically
+- Remove documents anytime
+
+---
+
+## 📤 Import & Export
+
+Supports multiple export formats:
+
+- TXT
+- Markdown
+- PDF
+- Memory Chat Package (.chat)
+
+Import previously exported conversations with one click.
+
+---
+
+## 📊 Analytics
+
+Real-time conversation insights:
+
+- Total conversations
+- Total messages
+- User / Assistant message counts
+- Average messages per conversation
+- Session duration
+- Character count
+- Word count
+- Export statistics
+
+---
+
+## 🤖 AI Experience
+
+- Groq LLM integration
+- Streaming responses
+- Multiple model selection
+- Secure API key handling
+- Context-aware conversations
+
+---
+
+## 🛠 Developer Experience
+
+- Modular architecture
+- SQLite persistence
+- Automated testing
+- Ruff linting
+- Black formatting
+- Comprehensive documentation
+- Changelog & Release Notes
+
+---
+
+# 🏗 Architecture
+
+```
+                         User
+                           │
+                           ▼
+                 Streamlit Application
+                           │
+        ┌──────────────────┼──────────────────┐
+        ▼                  ▼                  ▼
+ Components            Backend             Database
+        │                  │                  │
+        ▼                  ▼                  ▼
+ Document Chat      ChatBot Engine      SQLite Storage
+ Export System      Groq Client         Conversation DB
+ Analytics          Validation          Session History
+```
 
 ---
 
 # 🛠 Tech Stack
 
-| Technology | Purpose |
-|------------|----------|
-| Python | Programming Language |
-| Streamlit | Web Application Framework |
-| Google Gemini API | Large Language Model |
-| python-dotenv | Environment Variable Management |
+| Layer | Technology |
+|--------|------------|
+| Frontend | Streamlit |
+| LLM | Groq |
+| Language | Python 3.11 |
+| Database | SQLite |
+| PDF Processing | PyPDF2 |
+| PDF Export | ReportLab |
+| Testing | Pytest |
+| Formatting | Black |
+| Linting | Ruff |
 
 ---
 
-# 🏛 System Architecture
+# 📁 Project Structure
 
 ```text
-                    User
-                      │
-                      ▼
-              Streamlit Frontend
-                      │
-                      ▼
-               ChatBot Backend
-                      │
-                      ▼
-             Google Gemini API
-                      │
-                      ▼
-              AI Generated Response
-```
-
----
-
-# 📂 Project Structure
-
-```text
-memory-chatbot-gemini/
-│
+MemoryChatbot/
 ├── assets/
-│   ├── home.png
-│   ├── chat.png
-│   └── about.png
-│
+│   ├── demo/
+│   └── screenshots/
+├── backend/
+├── components/
+├── database/
+├── docs/
+├── models/
 ├── tests/
-│   └── test_backend.py
-│
+├── utils/
+├── .streamlit/
 ├── app.py
-├── backend.py
 ├── config.py
 ├── requirements.txt
-├── .gitignore
-├── .env.example
-├── LICENSE
-└── README.md
+├── README.md
+├── ROADMAP.md
+├── CHANGELOG.md
+└── LICENSE
 ```
 
 ---
 
-# ⚙️ Installation
+# 🔧 Installation
 
-### Clone Repository
+Clone the repository
 
 ```bash
-git clone https://github.com/varun0852/memory-chatbot-gemini.git
+git clone https://github.com/varun0852/memory-chatbot-ai.git
 
-cd memory-chatbot-gemini
+cd memory-chatbot-ai
 ```
 
----
-
-### Create Virtual Environment
-
-**Windows**
+Create virtual environment
 
 ```bash
 python -m venv .venv
+```
+
+Activate environment
+
+### Windows
+
+```bash
 .venv\Scripts\activate
 ```
 
-**Linux / macOS**
+### Linux / macOS
 
 ```bash
-python3 -m venv .venv
 source .venv/bin/activate
 ```
 
----
-
-### Install Dependencies
+Install dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -170,87 +240,107 @@ pip install -r requirements.txt
 
 ---
 
-### Configure Environment Variables
+# ⚙ Configuration
 
-Create a `.env` file.
+Create a `.env` file in the project root.
 
 ```env
-GOOGLE_API_KEY=YOUR_GOOGLE_GEMINI_API_KEY
+GROQ_API_KEY=your_groq_api_key
 ```
-
-Get your free API key:
-
-https://aistudio.google.com/app/apikey
 
 ---
 
-### Run the Application
+# 🚀 Run the Application
 
 ```bash
 streamlit run app.py
 ```
 
-Open:
-
-```
-http://localhost:8501
-```
-
 ---
 
-# 🧪 Running Tests
+# 🧪 Testing
+
+Run all tests
 
 ```bash
-python tests/test_backend.py
+python -m pytest
 ```
 
----
+Run Ruff
 
-# 🚀 Engineering Highlights
+```bash
+ruff check .
+```
 
-This project demonstrates:
+Run Black
 
-- ✅ Object-Oriented Programming
-- ✅ Clean Software Architecture
-- ✅ Backend Testing
-- ✅ Logging
-- ✅ Secure API Management
-- ✅ Environment Variables
-- ✅ Conversation Memory
-- ✅ Streamlit Deployment
-- ✅ Professional GitHub Repository
+```bash
+black .
+```
 
----
+Current Status
 
-# 📚 What I Learned
-
-During this project I improved my understanding of:
-
-- Google Gemini API Integration
-- Building AI Chat Applications
-- Object-Oriented Python
-- Environment Variable Management
-- Backend Testing
-- Logging & Debugging
-- Git & GitHub Workflow
-- Streamlit Deployment
+- ✅ 14 Automated Tests
+- ✅ Ruff Checks Passed
+- ✅ Black Formatting Applied
 
 ---
 
-# 🔮 Future Improvements
+# ☁ Deployment
 
-- 📄 PDF Chat
-- ⚡ Streaming Responses
-- 🐳 Docker Support
-- 🔄 CI/CD Pipeline
-- 💾 Chat Export
-- 🌙 Theme Switcher
-- 🤖 Multi-model Support
-- 🚀 Migration to Google GenAI SDK
+The application is deployed on **Streamlit Community Cloud**.
+
+Live URL
+
+https://memory-chatbot-ai-uw69hmnown9nzxj7kxouft.streamlit.app/
 
 ---
 
-# 🤝 Connect With Me
+# 🗺 Roadmap
+
+### Version 2.x
+
+- [x] Conversation History
+- [x] Conversation Search
+- [x] Analytics Dashboard
+- [x] PDF Document Chat
+- [x] Conversation Import/Export
+- [x] Modular Architecture
+- [x] Automated Tests
+
+### Future Improvements
+
+- [ ] Multi-provider LLM Support
+- [ ] Image Understanding
+- [ ] Voice Chat
+- [ ] RAG Knowledge Base
+- [ ] Docker Support
+- [ ] CI/CD Pipeline
+- [ ] Authentication
+- [ ] Cloud Database Support
+
+---
+
+# 🤝 Contributing
+
+Contributions, bug reports, and feature suggestions are welcome.
+
+If you would like to contribute:
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Commit your changes.
+4. Open a Pull Request.
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+See the `LICENSE` file for more information.
+
+---
 
 ## 👤 Author
 
@@ -259,27 +349,3 @@ During this project I improved my understanding of:
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/varun-a87781274/)
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/varun0852)
 [![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:diwakarvarun752@gmail.com)
-
----
-
-# ⭐ Support
-
-If you found this project helpful, please consider giving it a ⭐ on GitHub.
-
-It motivates me to continue building and sharing AI projects.
-
----
-
-# 📄 License
-
-This project is licensed under the **MIT License**.
-
----
-
-<p align="center">
-
-## ❤️ Built with Passion by Varun
-
-**AI Engineer • Generative AI • Machine Learning**
-
-</p>
