@@ -12,6 +12,9 @@ from config import APP_TITLE
 def render_welcome() -> None:
     """
     Render the application welcome screen.
+
+    Displays an introduction and feature overview when
+    the current conversation is empty.
     """
 
     if st.session_state.messages:
@@ -29,6 +32,7 @@ An intelligent conversational AI assistant built to demonstrate modern AI engine
 - ⚡ Streaming responses
 - 🤖 AI model selection
 - 📄 Export conversations (TXT, Markdown & PDF)
+- 📦 Import & Export conversation packages
 - 🔒 Secure API key support
 
 ---

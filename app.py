@@ -1,3 +1,13 @@
+"""
+Memory ChatBot AI.
+
+Main Streamlit application entry point.
+
+Coordinates application initialization,
+sidebar components, chat interaction,
+conversation management, and rendering.
+"""
+
 # Standard Library
 from datetime import datetime
 

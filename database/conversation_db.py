@@ -16,10 +16,15 @@ class ConversationDatabase:
     SQLite database for conversation storage.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        database_path: Path = DATABASE_PATH,
+    ) -> None:
         """
         Initialize the database.
         """
+
+        self.database_path = database_path
 
         self._create_table()
 
@@ -28,7 +33,7 @@ class ConversationDatabase:
         Create the conversations table if it does not exist.
         """
 
-        with sqlite3.connect(DATABASE_PATH) as connection:
+        with sqlite3.connect(self.database_path) as connection:
 
             cursor = connection.cursor()
 
@@ -56,7 +61,7 @@ class ConversationDatabase:
         Save or update a conversation.
         """
 
-        with sqlite3.connect(DATABASE_PATH) as connection:
+        with sqlite3.connect(self.database_path) as connection:
 
             cursor = connection.cursor()
 
@@ -100,7 +105,7 @@ class ConversationDatabase:
         Return all conversations ordered by newest first.
         """
 
-        with sqlite3.connect(DATABASE_PATH) as connection:
+        with sqlite3.connect(self.database_path) as connection:
 
             cursor = connection.cursor()
 
@@ -123,7 +128,7 @@ class ConversationDatabase:
         Load a conversation by session ID.
         """
 
-        with sqlite3.connect(DATABASE_PATH) as connection:
+        with sqlite3.connect(self.database_path) as connection:
 
             cursor = connection.cursor()
 
@@ -151,7 +156,7 @@ class ConversationDatabase:
         Delete a conversation.
         """
 
-        with sqlite3.connect(DATABASE_PATH) as connection:
+        with sqlite3.connect(self.database_path) as connection:
 
             cursor = connection.cursor()
 
@@ -173,7 +178,7 @@ class ConversationDatabase:
         Increment the export count.
         """
 
-        with sqlite3.connect(DATABASE_PATH) as connection:
+        with sqlite3.connect(self.database_path) as connection:
 
             cursor = connection.cursor()
 
@@ -196,7 +201,7 @@ class ConversationDatabase:
         Search conversations by title.
         """
 
-        with sqlite3.connect(DATABASE_PATH) as connection:
+        with sqlite3.connect(self.database_path) as connection:
 
             cursor = connection.cursor()
 
@@ -225,7 +230,7 @@ class ConversationDatabase:
         Return conversation statistics.
         """
 
-        with sqlite3.connect(DATABASE_PATH) as connection:
+        with sqlite3.connect(self.database_path) as connection:
 
             cursor = connection.cursor()
 

@@ -20,6 +20,11 @@ def render_import_section(
 ) -> None:
     """
     Render the conversation import section.
+
+    Allows users to import previously exported
+    conversation packages, restores the conversation
+    state, assigns a new session ID, and saves the
+    conversation to the local database.
     """
 
     st.markdown("### 📥 Import")
@@ -48,10 +53,10 @@ def render_import_section(
 
                 messages, metadata = import_chat_package(package)
 
-                # Restore conversation
+                # Restore imported messages into the current session.
                 st.session_state.messages = messages
 
-                # Generate a NEW session ID
+                # Generate a new session ID to avoid overwriting an existing conversation.
                 st.session_state.session_id = generate_session_id()
 
                 # Restore original creation time if available
@@ -60,7 +65,7 @@ def render_import_section(
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 )
 
-                # Save imported conversation
+                # Save the imported conversation as a new local conversation.
                 db.save_conversation(
                     session_id=st.session_state.session_id,
                     title=messages[0]["content"][:50],

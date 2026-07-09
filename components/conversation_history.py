@@ -17,8 +17,13 @@ def render_conversation_history(
     db: ConversationDatabase,
 ) -> None:
     """
-    Render the conversation history sidebar.
+    Render the conversation history section.
+
+    Displays saved conversations, supports searching,
+    loading, and deleting conversations, and highlights
+    the currently active conversation.
     """
+
     search_query = st.text_input(
         "Search conversations",
         placeholder="Search...",
@@ -54,7 +59,7 @@ def render_conversation_history(
             else:
                 date_label = conversation_date.strftime("%b %d")
 
-            # Show the date only once for each group
+            # Render the date header only once for each date group.
             if last_date != date_label:
                 st.caption(f"📅 {date_label}")
                 last_date = date_label

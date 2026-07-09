@@ -9,10 +9,15 @@ import streamlit as st
 
 def render_api_section() -> str:
     """
-    Render the API key section.
+    Render the API key configuration section.
+
+    Allows the user to provide a Groq API key or
+    fall back to the API key configured in the
+    application environment.
 
     Returns:
-        API key entered by the user.
+        The API key entered by the user. Returns an
+        empty string if no key is provided.
     """
     st.markdown("### 🔑 API Access")
 

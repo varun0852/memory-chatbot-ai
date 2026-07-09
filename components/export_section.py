@@ -26,6 +26,11 @@ def render_export_section(
 ) -> None:
     """
     Render the conversation export section.
+
+    Provides download options for the current conversation
+    in TXT, Markdown, PDF, and portable .chat package
+    formats. Export statistics are updated after each
+    successful download.
     """
 
     st.markdown("### 📤 Export")
@@ -41,9 +46,7 @@ def render_export_section(
 
     has_messages = len(st.session_state.messages) > 0
 
-    # ==========================================================
-    # Export conversation as TEXT file
-    # ==========================================================
+    # Export as TXT
 
     txt_content = export_as_text(
         st.session_state.messages,
@@ -59,9 +62,7 @@ def render_export_section(
         on_click=db.increment_export_count,
         args=(st.session_state.session_id,),
     )
-    # ==========================================================
-    # Export conversation as MARKDOWN file
-    # ==========================================================
+    # Export as Markdown
 
     markdown_content = export_as_markdown(
         st.session_state.messages,
@@ -77,9 +78,7 @@ def render_export_section(
         on_click=db.increment_export_count,
         args=(st.session_state.session_id,),
     )
-    # ==========================================================
-    # Export conversation as PDF file
-    # ==========================================================
+    # Export as PDF
 
     pdf_content = export_as_pdf(
         st.session_state.messages,
@@ -99,9 +98,7 @@ def render_export_section(
     if not has_messages:
         st.caption("💡 Start a conversation to enable exporting")
 
-    # ==========================================================
-    # Export conversation package (.chat)
-    # ==========================================================
+    # Export as .chat package
 
     st.download_button(
         label="📦 Export Conversation Package",

@@ -51,6 +51,9 @@ def import_chat_package(
     except json.JSONDecodeError:
         raise ValueError("Invalid conversation package.")
 
+    if not isinstance(data, dict):
+        raise ValueError("Invalid conversation package.")
+
     # validation 2 Application
     if data.get("application") != "Memory ChatBot AI":
         raise ValueError("This file was not created by Memory ChatBot AI.")

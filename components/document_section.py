@@ -13,7 +13,11 @@ from utils.document_session import clear_document
 
 def render_document_section() -> None:
     """
-    Render the document upload section.
+    Render the document management section.
+
+    Allows users to upload a PDF, extracts its text for
+    document chat, displays the active document, and
+    provides an option to remove it.
     """
 
     st.markdown("### 📄 Document")

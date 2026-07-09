@@ -14,7 +14,10 @@ def render_metric_rows(
     metrics: list[tuple[str, str | int | float]],
 ) -> None:
     """
-    Render a list of metric rows.
+    Render metric rows in a consistent sidebar layout.
+
+    Each metric is displayed as a label-value pair using
+    a shared HTML layout.
     """
 
     for label, value in metrics:
@@ -40,7 +43,10 @@ def render_metric_rows(
 
 def render_current_session() -> None:
     """
-    Render current session insights.
+    Render analytics for the current chat session.
+
+    Displays message count, character count, word count,
+    and elapsed session duration.
     """
 
     st.divider()
@@ -106,8 +112,12 @@ def render_conversation_statistics(
     statistics: dict,
 ) -> None:
     """
-    Render overall conversation statistics.
+    Render aggregated conversation statistics.
+
+    Displays statistics calculated from all saved
+    conversations in the database.
     """
+    
     metrics = [
         (
             "💬 Conversations",

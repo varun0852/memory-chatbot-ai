@@ -13,8 +13,13 @@ from utils.chat_utils import generate_session_id
 
 def initialize_session_state() -> None:
     """
-    Initialize all Streamlit session state variables.
+    Initialize the Streamlit session state.
+
+    Creates all required session state variables with
+    their default values if they do not already exist.
+    Existing values are preserved.
     """
+
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
@@ -30,9 +35,7 @@ def initialize_session_state() -> None:
     if "show_import_success" not in st.session_state:
         st.session_state.show_import_success = False
 
-    # ==========================================================
-    # Generate a unique session ID for the conversation
-    # ==========================================================
+    # Initialize conversation metadata.
 
     if "session_id" not in st.session_state:
         st.session_state.session_id = generate_session_id()
@@ -43,9 +46,7 @@ def initialize_session_state() -> None:
     if "selected_model" not in st.session_state:
         st.session_state.selected_model = DEFAULT_MODEL
 
-    # ==========================================================
-    # Generate a Dialog for clear conversation
-    # ==========================================================
+    # Initialize clear chat dialog state.
 
     if "clear_chat_confirmed" not in st.session_state:
         st.session_state.clear_chat_confirmed = False
