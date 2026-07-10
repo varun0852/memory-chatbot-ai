@@ -8,7 +8,6 @@ import streamlit as st
 
 from config import DEFAULT_MODEL
 from utils.chat_utils import generate_session_id
-from utils.browser_identity import get_user_id
 
 
 def initialize_session_state() -> None:
@@ -50,7 +49,7 @@ def initialize_session_state() -> None:
     # ==========================================================
 
     if "user_id" not in st.session_state:
-        st.session_state.user_id = get_user_id()
+        st.session_state.user_id = None
 
     # Initialize conversation metadata.
 
