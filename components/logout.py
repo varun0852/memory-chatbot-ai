@@ -12,7 +12,8 @@ def logout_button() -> None:
 
     st.sidebar.divider()
 
-    st.sidebar.write(f"👤 {st.session_state.username}")
+    st.sidebar.markdown("### 👤 Logged in as")
+    st.sidebar.success(st.session_state.username)
 
     if st.sidebar.button(
         "🚪 Logout",

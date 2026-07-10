@@ -72,6 +72,7 @@ st.set_page_config(
     page_title=APP_TITLE,
     page_icon="🧠",
     layout="centered",
+    initial_sidebar_state="collapsed",
 )
 
 st.title(f"🧠 {APP_TITLE}")

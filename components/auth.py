@@ -15,8 +15,6 @@ def login_page() -> None:
     Render the login page.
     """
 
-    st.title("🧠 Memory ChatBot AI")
-
     st.subheader("Login")
 
     username = st.text_input("Username")
