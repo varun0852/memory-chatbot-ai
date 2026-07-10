@@ -67,6 +67,7 @@ def render_import_section(
 
                 # Save the imported conversation as a new local conversation.
                 db.save_conversation(
+                    user_id=st.session_state.user_id,
                     session_id=st.session_state.session_id,
                     title=messages[0]["content"][:50],
                     created_at=st.session_state.created_at,

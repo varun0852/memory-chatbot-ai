@@ -2,7 +2,7 @@ from pathlib import Path
 
 from database.conversation_db import ConversationDatabase
 
-from pathlib import Path
+TEST_USER_ID = "test-user"
 
 
 def create_database(
@@ -37,13 +37,17 @@ def test_save_and_load_conversation(tmp_path: Path) -> None:
     ]
 
     db.save_conversation(
+        user_id=TEST_USER_ID,
         session_id="abc123",
         title="Test Chat",
         created_at="2026-07-09",
         messages=messages,
     )
 
-    loaded = db.load_conversation("abc123")
+    loaded = db.load_conversation(
+        TEST_USER_ID,
+        "abc123",
+    )
 
     assert loaded == messages
 
@@ -60,7 +64,8 @@ def test_load_missing_conversation(
     )
 
     conversation = db.load_conversation(
-        "does_not_exist"
+        TEST_USER_ID,
+        "does_not_exist",
     )
 
     assert conversation == []
@@ -83,15 +88,25 @@ def test_delete_conversation(tmp_path: Path) -> None:
     ]
 
     db.save_conversation(
+        user_id=TEST_USER_ID,
         session_id="abc123",
         title="Test",
         created_at="2026-07-09",
         messages=messages,
     )
 
-    db.delete_conversation("abc123")
+    db.delete_conversation(
+        TEST_USER_ID,
+        "abc123",
+    )
 
-    assert db.load_conversation("abc123") == []
+    assert (
+        db.load_conversation(
+            TEST_USER_ID,
+            "abc123",
+        )
+        == []
+    )
 
 
 def test_search_conversations(tmp_path: Path) -> None:
@@ -104,6 +119,7 @@ def test_search_conversations(tmp_path: Path) -> None:
     )
 
     db.save_conversation(
+        user_id=TEST_USER_ID,
         session_id="1",
         title="Python Tutorial",
         created_at="2026-07-09",
@@ -111,13 +127,17 @@ def test_search_conversations(tmp_path: Path) -> None:
     )
 
     db.save_conversation(
+        user_id=TEST_USER_ID,
         session_id="2",
         title="Machine Learning",
         created_at="2026-07-09",
         messages=[],
     )
 
-    results = db.search_conversations("Python")
+    results = db.search_conversations(
+        TEST_USER_ID,
+        "Python"
+    )
 
     assert len(results) == 1
     assert results[0][1] == "Python Tutorial"
@@ -133,6 +153,7 @@ def test_get_conversations(tmp_path: Path) -> None:
     )
 
     db.save_conversation(
+        TEST_USER_ID,
         "1",
         "Chat One",
         "2026-07-09",
@@ -140,13 +161,16 @@ def test_get_conversations(tmp_path: Path) -> None:
     )
 
     db.save_conversation(
+        TEST_USER_ID,
         "2",
         "Chat Two",
         "2026-07-10",
         [],
     )
 
-    conversations = db.get_conversations()
+    conversations = db.get_conversations(
+    TEST_USER_ID,
+    )   
 
     assert len(conversations) == 2
 
@@ -161,16 +185,26 @@ def test_increment_export_count(tmp_path: Path) -> None:
     )
 
     db.save_conversation(
+        TEST_USER_ID,
         "1",
         "Test",
         "2026-07-09",
         [],
     )
 
-    db.increment_export_count("1")
-    db.increment_export_count("1")
+    db.increment_export_count(
+        TEST_USER_ID,
+        "1",
+    )
 
-    stats = db.get_statistics()
+    db.increment_export_count(
+        TEST_USER_ID,
+        "1",
+    )
+
+    stats = db.get_statistics(
+        TEST_USER_ID,
+    )
 
     assert stats["total_exports"] == 2
 
@@ -185,6 +219,7 @@ def test_get_statistics(tmp_path: Path) -> None:
     )
 
     db.save_conversation(
+        TEST_USER_ID,
         "1",
         "Chat One",
         "2026-07-09",
@@ -195,6 +230,7 @@ def test_get_statistics(tmp_path: Path) -> None:
     )
 
     db.save_conversation(
+        TEST_USER_ID,
         "2",
         "Chat Two",
         "2026-07-10",
@@ -205,7 +241,9 @@ def test_get_statistics(tmp_path: Path) -> None:
         ],
     )
 
-    stats = db.get_statistics()
+    stats = db.get_statistics(
+        TEST_USER_ID,
+    )
 
     assert stats["total_conversations"] == 2
     assert stats["total_messages"] == 5

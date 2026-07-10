@@ -30,6 +30,8 @@ from components.clear_chat_dialog import clear_chat_dialog
 from components.analytics import render_analytics
 from components.welcome import render_welcome
 from components.footer import render_footer
+from components.auth import login_page
+from components.logout import logout_button
 from components.conversation_history import (
     render_conversation_history,
 )
@@ -81,6 +83,12 @@ st.caption("Modern Conversational AI")
 # ==========================================================
 
 initialize_session_state()
+
+if not st.session_state.logged_in:
+    login_page()
+    st.stop()
+
+logout_button()
 
 
 if st.session_state.show_import_success:
@@ -203,7 +211,9 @@ with st.sidebar:
     # Conversation analytics
     # ==========================================================
 
-    statistics = db.get_statistics()
+    statistics = db.get_statistics(
+        st.session_state.user_id,
+    )
     render_analytics(statistics)
 
     # ==========================================================
@@ -337,6 +347,7 @@ if prompt := st.chat_input("What would you like to talk about?"):
                     st.session_state.messages.append(assistant_message)
 
                     db.save_conversation(
+                        user_id=st.session_state.user_id,
                         session_id=st.session_state.session_id,
                         title=st.session_state.messages[0]["content"][:50],
                         created_at=st.session_state.created_at,

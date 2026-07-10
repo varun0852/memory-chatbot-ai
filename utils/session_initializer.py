@@ -7,8 +7,8 @@ from datetime import datetime
 import streamlit as st
 
 from config import DEFAULT_MODEL
-
 from utils.chat_utils import generate_session_id
+from utils.browser_identity import get_user_id
 
 
 def initialize_session_state() -> None:
@@ -19,6 +19,15 @@ def initialize_session_state() -> None:
     their default values if they do not already exist.
     Existing values are preserved.
     """
+
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
+
+    if "user_id" not in st.session_state:
+        st.session_state.user_id = None
+
+    if "username" not in st.session_state:
+        st.session_state.username = None
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -35,6 +44,14 @@ def initialize_session_state() -> None:
     if "show_import_success" not in st.session_state:
         st.session_state.show_import_success = False
 
+    
+    # ==========================================================
+    # Load persistent browser user ID
+    # ==========================================================
+
+    if "user_id" not in st.session_state:
+        st.session_state.user_id = get_user_id()
+
     # Initialize conversation metadata.
 
     if "session_id" not in st.session_state:
@@ -50,3 +67,9 @@ def initialize_session_state() -> None:
 
     if "clear_chat_confirmed" not in st.session_state:
         st.session_state.clear_chat_confirmed = False
+
+
+
+    st.sidebar.caption(f"User ID: {st.session_state.user_id}")
+
+

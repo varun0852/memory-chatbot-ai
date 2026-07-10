@@ -37,21 +37,26 @@ class ConversationDatabase:
 
             cursor = connection.cursor()
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 CREATE TABLE IF NOT EXISTS conversations (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
                     session_id TEXT UNIQUE,
                     title TEXT,
                     created_at TEXT,
                     messages TEXT,
-                    total_exports INTEGER DEFAULT 0
+                    total_exports INTEGER DEFAULT 0,
+                    FOREIGN KEY (user_id) REFERENCES users(id)
                 )
-                """)
+                """
+            )
 
             connection.commit()
 
     def save_conversation(
         self,
+        user_id: int,
         session_id: str,
         title: str,
         created_at: str,
@@ -67,65 +72,80 @@ class ConversationDatabase:
 
             cursor.execute(
                 """
+                SELECT total_exports
+                FROM conversations
+                WHERE
+                    user_id = ?
+                    AND session_id = ?
+                """,
+                (
+                    user_id,
+                    session_id,
+                ),
+            )
+
+            existing = cursor.fetchone()
+
+            exports = existing[0] if existing else 0
+
+            cursor.execute(
+                """
                 INSERT OR REPLACE INTO conversations (
+                    user_id,
                     session_id,
                     title,
                     created_at,
                     messages,
                     total_exports
                 )
-                VALUES (
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    COALESCE(
-                        (
-                            SELECT total_exports
-                            FROM conversations
-                            WHERE session_id = ?
-                        ),
-                        0
-                    )
-                )
+                VALUES (?, ?, ?, ?, ?, ?)
                 """,
                 (
+                    user_id,
                     session_id,
                     title,
                     created_at,
                     json.dumps(messages),
-                    session_id,
+                    exports,
                 ),
             )
 
             connection.commit()
 
-    def get_conversations(self) -> list:
+    def get_conversations(
+        self,
+        user_id: int,
+    ) -> list:
         """
-        Return all conversations ordered by newest first.
+        Return all conversations for a user.
         """
 
         with sqlite3.connect(self.database_path) as connection:
 
             cursor = connection.cursor()
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT
                     session_id,
                     title,
                     created_at
                 FROM conversations
+                WHERE user_id = ?
                 ORDER BY created_at DESC
-                """)
+                """,
+                (user_id,),
+            )
 
             return cursor.fetchall()
 
     def load_conversation(
         self,
+        user_id: int,
         session_id: str,
     ) -> list:
         """
-        Load a conversation by session ID.
+        Load a conversation.
         """
 
         with sqlite3.connect(self.database_path) as connection:
@@ -136,9 +156,14 @@ class ConversationDatabase:
                 """
                 SELECT messages
                 FROM conversations
-                WHERE session_id = ?
+                WHERE
+                    user_id = ?
+                    AND session_id = ?
                 """,
-                (session_id,),
+                (
+                    user_id,
+                    session_id,
+                ),
             )
 
             result = cursor.fetchone()
@@ -147,9 +172,11 @@ class ConversationDatabase:
             return []
 
         return json.loads(result[0])
+    
 
     def delete_conversation(
         self,
+        user_id: int,
         session_id: str,
     ) -> None:
         """
@@ -163,15 +190,21 @@ class ConversationDatabase:
             cursor.execute(
                 """
                 DELETE FROM conversations
-                WHERE session_id = ?
+                WHERE
+                    user_id = ?
+                    AND session_id = ?
                 """,
-                (session_id,),
+                (
+                    user_id,
+                    session_id,
+                ),
             )
 
             connection.commit()
 
     def increment_export_count(
         self,
+        user_id: int,
         session_id: str,
     ) -> None:
         """
@@ -186,19 +219,25 @@ class ConversationDatabase:
                 """
                 UPDATE conversations
                 SET total_exports = total_exports + 1
-                WHERE session_id = ?
+                WHERE
+                    user_id = ?
+                    AND session_id = ?
                 """,
-                (session_id,),
+                (
+                    user_id,
+                    session_id,
+                ),
             )
 
             connection.commit()
 
     def search_conversations(
         self,
+        user_id: int,
         query: str,
     ) -> list:
         """
-        Search conversations by title.
+        Search conversations.
         """
 
         with sqlite3.connect(self.database_path) as connection:
@@ -213,11 +252,15 @@ class ConversationDatabase:
                     created_at
                 FROM conversations
                 WHERE
-                    title LIKE ?
-                    OR messages LIKE ?
+                    user_id = ?
+                    AND (
+                        title LIKE ?
+                        OR messages LIKE ?
+                    )
                 ORDER BY created_at DESC
                 """,
                 (
+                    user_id,
                     f"%{query}%",
                     f"%{query}%",
                 ),
@@ -225,21 +268,28 @@ class ConversationDatabase:
 
             return cursor.fetchall()
 
-    def get_statistics(self) -> dict:
+    def get_statistics(
+        self,
+        user_id: int,
+    ) -> dict:
         """
-        Return conversation statistics.
+        Return statistics for a single user.
         """
 
         with sqlite3.connect(self.database_path) as connection:
 
             cursor = connection.cursor()
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT
                     messages,
                     total_exports
                 FROM conversations
-                """)
+                WHERE user_id = ?
+                """,
+                (user_id,),
+            )
 
             conversations = cursor.fetchall()
 
@@ -267,7 +317,9 @@ class ConversationDatabase:
                     assistant_messages += 1
 
         average_messages = (
-            total_messages / total_conversations if total_conversations > 0 else 0
+            total_messages / total_conversations
+            if total_conversations > 0
+            else 0
         )
 
         return {

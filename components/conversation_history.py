@@ -30,9 +30,14 @@ def render_conversation_history(
     )
 
     if search_query:
-        conversations = db.search_conversations(search_query)
+        conversations = db.search_conversations(
+            st.session_state.user_id,
+            search_query,
+        )
     else:
-        conversations = db.get_conversations()
+        conversations = db.get_conversations(
+            st.session_state.user_id,
+        )
 
     if not conversations:
         if search_query:
@@ -78,7 +83,10 @@ def render_conversation_history(
                     key=f"load_{session_id}",
                     use_container_width=True,
                 ):
-                    st.session_state.messages = db.load_conversation(session_id)
+                    st.session_state.messages = db.load_conversation(
+                        st.session_state.user_id,
+                        session_id,
+                    )
 
                     st.session_state.session_id = session_id
 
@@ -90,7 +98,10 @@ def render_conversation_history(
                     key=f"delete_{session_id}",
                     use_container_width=True,
                 ):
-                    db.delete_conversation(session_id)
+                    db.delete_conversation(
+                        st.session_state.user_id,
+                        session_id,
+                    )
 
                     if session_id == st.session_state.session_id:
                         reset_chat_session()

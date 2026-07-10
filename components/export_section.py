@@ -60,7 +60,10 @@ def render_export_section(
         mime="text/plain",
         disabled=not has_messages,
         on_click=db.increment_export_count,
-        args=(st.session_state.session_id,),
+        args=(
+            st.session_state.user_id,
+            st.session_state.session_id,
+        ),
     )
     # Export as Markdown
 
@@ -76,7 +79,10 @@ def render_export_section(
         mime="text/markdown",
         disabled=not has_messages,
         on_click=db.increment_export_count,
-        args=(st.session_state.session_id,),
+        args=(
+            st.session_state.user_id,
+            st.session_state.session_id,
+        ),
     )
     # Export as PDF
 
@@ -92,7 +98,10 @@ def render_export_section(
         mime="application/pdf",
         disabled=not has_messages,
         on_click=db.increment_export_count,
-        args=(st.session_state.session_id,),
+        args=(
+            st.session_state.user_id,
+            st.session_state.session_id,
+        ),
     )
 
     if not has_messages:
@@ -107,5 +116,8 @@ def render_export_section(
         mime="application/json",
         disabled=not has_messages,
         on_click=db.increment_export_count,
-        args=(st.session_state.session_id,),
+        args=(
+            st.session_state.user_id,
+            st.session_state.session_id,
+        ),
     )
